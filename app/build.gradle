@@ -28,7 +28,7 @@ android {
         targetSdkVersion 28
         versionCode generateVersionCode()
         versionName generateVersionName()
-        buildConfigField("String", "X_AUTH_TOKEN", "\"API_KEY\"")
+        buildConfigField("String", "X_AUTH_TOKEN", "\"e66c101549984d2cafbeb64f0ba42263\"")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

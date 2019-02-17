@@ -21,7 +21,7 @@ pattern to abstract data from the views.
 
 ## Libraries used
 
-1 [Android Support Libraries][4]
+1. [Android Support Libraries][4]
 2. [Constraint Layout][12] for laying out views and view groups, the project uses the version `2.0.0-alpha3` as to be able to use the `MotionLayout` option
 3. [Glide][5] image loading library combined with
 4. [AndroidSVG][6] for loading images from the API
