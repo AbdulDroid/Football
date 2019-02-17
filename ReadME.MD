@@ -16,16 +16,20 @@ android {
 
 ## Coding pattern
 [MVVM][2] design pattern was used in the implementation of this project with [Koin][3] for Dependency injection
-and [AndroidX][4] artifacts were used for this project. The project employs a fragmented approach.
+and [AndroidX][4] artifacts were used for this project. The project employs a fragmented approach and repository 
+pattern to abstract data from the views.
 
-##Libraries used
-1. [Glide][5] image loading library combined with
-2. [AndroidSVG][6] for loading images from the API
-3. [Koin][3] for Dependency Injection
-4. [Retrofit][7] and [RxJava2][8] for Network calls
-5. [OkHttp3][9] for Network Logging interceptor
-6. [JUnit][10] for Unit Tests
-7. [Espresso][11] for UI and Automated tests
+## Libraries used
+
+1 [Android Support Libraries][4]
+2. [Constraint Layout][12] for laying out views and view groups, the project uses the version `2.0.0-alpha3` as to be able to use the `MotionLayout` option
+3. [Glide][5] image loading library combined with
+4. [AndroidSVG][6] for loading images from the API
+5. [Koin][3] for Dependency Injection
+6. [Retrofit][7] and [RxJava2][8] for Network calls
+7. [OkHttp3][9] for Network Logging interceptor
+8. [JUnit][10] for Unit Tests
+9. [Espresso][11] for UI and Automated tests
 
 
 
@@ -41,3 +45,4 @@ and [AndroidX][4] artifacts were used for this project. The project employs a fr
 [9]: https://square.github.io/okhttp/
 [10]: https://junit.org/junit4/
 [11]: https://developer.android.com/training/testing/espresso/
+[12]: https://developer.android.com/training/constraint-layout/
