@@ -32,7 +32,7 @@ and [AndroidX][4] artifacts were used for this project. The project employs a fr
 
 [1]: https://www.football-data.org/documentation/quickstart
 [2]: https://www.journaldev.com/20292/android-mvvm-design-pattern
-[3}: https://insert-koin.io/
+[3]: https://insert-koin.io/
 [4]: https://developer.android.com/jetpack/androidx/migrate
 [5]: https://github.com/bumptech/glide
 [6]: https://github.com/BigBadaboom/androidsvg
