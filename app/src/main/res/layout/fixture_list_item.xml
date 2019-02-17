@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
+
+    <TextView
+            android:id="@+id/status"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dip"
+            android:layout_marginStart="16dip"
+            android:textSize="18sp"
+            android:textColor="@color/text_black"
+            app:layout_constraintHorizontal_weight="4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/home"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="SCHEDULED"/>
+
+    <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dip"
+            android:textSize="24sp"
+            android:fontFamily="@font/proxima_nova_bold"
+            android:textColor="@color/text_black"
+            app:layout_constraintBottom_toTopOf="@+id/mDay"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/status"
+            tools:text="13:30"/>
+
+    <TextView
+            android:id="@+id/mDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dip"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/time"
+            tools:text="MD:27"/>
+
+    <TextView
+            android:id="@+id/home"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dip"
+            android:layout_marginStart="12dip"
+            android:textSize="24sp"
+            android:fontFamily="@font/proxima_nova_bold"
+            android:textColor="@color/text_black"
+            app:layout_constraintHorizontal_weight="15"
+            app:layout_constraintStart_toEndOf="@+id/status"
+            app:layout_constraintEnd_toStartOf="@+id/duration"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@tools:sample/full_names"/>
+
+    <TextView
+            android:id="@+id/away"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dip"
+            android:textSize="24sp"
+            android:fontFamily="@font/proxima_nova_bold"
+            android:textColor="@color/text_black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/home"
+            app:layout_constraintEnd_toEndOf="@+id/home"
+            app:layout_constraintTop_toBottomOf="@+id/home"
+            tools:text="@tools:sample/full_names"/>
+
+    <TextView
+            android:id="@+id/homeScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dip"
+            android:layout_marginEnd="16dip"
+            android:textSize="24sp"
+            android:fontFamily="@font/proxima_nova_bold"
+            android:textColor="@color/text_black"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/status"
+            tools:text="6"/>
+
+    <TextView
+            android:id="@+id/awayScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dip"
+            android:textSize="24sp"
+            android:fontFamily="@font/proxima_nova_bold"
+            android:textColor="@color/text_black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/homeScore"
+            tools:text="0"/>
+
+    <TextView
+            android:id="@+id/duration"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            app:layout_constraintHorizontal_weight="1.5"
+            app:layout_constraintBottom_toTopOf="@+id/awayScore"
+            app:layout_constraintEnd_toStartOf="@+id/homeScore"
+            app:layout_constraintStart_toEndOf="@+id/home"
+            app:layout_constraintTop_toBottomOf="@+id/homeScore"
+            tools:text="000'"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

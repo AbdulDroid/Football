@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/error_view"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <ImageView
+            android:id="@+id/dummy_image"
+            android:layout_width="100dip"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:tint="@color/text_lighter"
+            android:layout_marginBottom="28dip"
+            android:contentDescription="@string/error_image"
+            app:layout_constraintBottom_toTopOf="@+id/error_message"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/ic_soccer"/>
+
+    <TextView
+            android:id="@+id/error_message"
+            android:layout_width="0dip"
+            android:gravity="center"
+            android:textAlignment="center"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textColor="@color/text_lighter"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="No Fixtures"/>
+
+    <Button
+            android:id="@+id/retryButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dip"
+            android:minWidth="16dip"
+            android:minHeight="16dip"
+            android:paddingTop="16dip"
+            android:paddingBottom="16dip"
+            android:paddingStart="72dip"
+            android:paddingEnd="72dip"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            android:text="@string/retry"
+            android:background="@drawable/button_bg"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/error_message"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

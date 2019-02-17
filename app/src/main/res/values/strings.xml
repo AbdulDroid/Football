@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Football</string>
+    <string name="title_fixtures">Today\'s Fixtures</string>
+    <string name="title_competition">Competitions</string>
+    <string name="matchday">MD:%1$d</string>
+    <string name="tab_text_1">Table</string>
+    <string name="tab_text_2">Fixtures</string>
+    <string name="tab_text_3">Teams</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="retry">Retry</string>
+    <string name="error_image">PlaceHolderImage</string>
+    <string name="close_button">Close button</string>
+    <string name="team_crest">Team Crest</string>
+</resources>
