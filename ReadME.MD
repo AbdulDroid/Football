@@ -13,7 +13,7 @@ android {
     
 }
 ```
-and build the project on a mobile design or an emulator of choice.
+and build(use Android Studio as the recommended IDE) & run the project on a mobile device or an emulator of choice.
 
 ## Coding pattern
 [MVVM][2] design pattern was used in the implementation of this project with [Koin][3] for Dependency injection
