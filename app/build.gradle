@@ -2,13 +2,9 @@ apply plugin: 'com.android.application'
 
 apply plugin: 'kotlin-android'
 
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-parcelize'
 
 apply plugin: 'kotlin-kapt'
-
-androidExtensions {
-    experimental = true
-}
 
 ext {
     versionMajor = 0
@@ -21,14 +17,14 @@ ext {
 
 
 android {
-    compileSdkVersion 28
+    compileSdk 35
     defaultConfig {
         applicationId "com.sterlingbankng.football"
         minSdkVersion project.ext.minSdkVersion
-        targetSdkVersion 28
+        targetSdk 34
         versionCode generateVersionCode()
         versionName generateVersionName()
-        buildConfigField("String", "X_AUTH_TOKEN", "\"API_KEY\"")
+        buildConfigField "String", "X_AUTH_TOKEN", API_KEY
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -37,59 +33,78 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+
+    namespace "com.sterlingbankng.football"
+
+    buildFeatures {
+        viewBinding true
+        buildConfig true
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     //Support libraries
-    implementation 'androidx.appcompat:appcompat:1.1.0-alpha02'
-    implementation 'com.google.android.material:material:1.1.0-alpha03'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
+    implementation libs.androidx.appcompat
+    implementation libs.material
+    implementation libs.androidx.constraintlayout
 
     //Kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.1.0-alpha04'
+    implementation libs.kotlin.stdlib.jdk7
+    implementation libs.androidx.core.ktx
 
     //Architecture components
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
-    implementation 'androidx.room:room-runtime:2.1.0-alpha04'
-    implementation 'androidx.room:room-rxjava2:2.1.0-alpha04'
-    testImplementation 'androidx.arch.core:core-testing:2.0.0'
-    testImplementation 'androidx.room:room-testing:2.1.0-alpha04'
-    kapt 'androidx.lifecycle:lifecycle-compiler:2.0.0'
-    kapt 'androidx.room:room-compiler:2.1.0-alpha04'
+    implementation libs.androidx.lifecycle.viewmodel.ktx
+    implementation libs.androidx.room.runtime
+    implementation libs.androidx.room.rxjava2
+    testImplementation libs.androidx.core.testing
+    testImplementation libs.androidx.room.testing
+    kapt libs.androidx.lifecycle.compiler
+    kapt libs.androidx.room.compiler
 
     // Koin
-    implementation 'org.koin:koin-android:2.0.0-beta-1'
-    implementation 'org.koin:koin-androidx-viewmodel:2.0.0-beta-1'
-    androidTestImplementation 'org.koin:koin-test:2.0.0-beta-1'
+    implementation libs.koin.android
+    implementation libs.koin.androidx.viewmodel
+    androidTestImplementation libs.koin.test
 
     //Retrofit
-    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
-    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.4.0'
+    implementation libs.retrofit
+    implementation libs.retrofit.converter.gson
+    implementation libs.retrofit.adapter.rxjava2
 
     //RxAndroid
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+    implementation libs.rxjava.rxandroid
 
     //Glide for Image loading
-    implementation 'com.caverock:androidsvg:1.2.1'
-    implementation 'com.github.bumptech.glide:glide:4.8.0'
-    kapt 'com.github.bumptech.glide:compiler:4.8.0'
+    implementation libs.androidsvg
+    implementation libs.glide
+    kapt libs.glide.compiler
 
     //Google JSON Parser
-    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation libs.gson
 
     //OkHttp
-    implementation 'com.squareup.okhttp3:okhttp:3.12.1'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation platform(libs.okhttp.bom)
+    implementation libs.okhttp
+    implementation libs.logging.interceptor
+    implementation libs.androidx.legacy.support.v4
     
     //Test libraries
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.1.2-alpha01'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.2-alpha01'
-    androidTestImplementation 'androidx.test:rules:1.1.2-alpha01'
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.runner
+    androidTestImplementation libs.androidx.espresso.core
+    androidTestImplementation libs.androidx.rules
+    // Kotlin extensions for androidx.test.ext.junit
+    androidTestImplementation libs.androidx.junit.ktx
 }
 
 private Integer generateVersionCode() {
