@@ -1,6 +1,6 @@
 [versions]
 coreTesting = "2.2.0"
-gradle = "8.7.3"
+agp = "8.7.3"
 junitKtx = "1.2.1"
 kotlin = "2.1.0"
 appcompat = "1.7.0"
@@ -15,7 +15,7 @@ koin = "4.0.0"
 retrofit = "2.9.0"
 rxjava2 = "2.1.0"
 androidsvg = "1.2.1"
-glide = "4.12.0"
+glide = "4.14.2"
 gson = "2.10.1"
 okhttp3 = "4.12.0"
 junit = "4.13.2"
@@ -40,8 +40,7 @@ androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "
 androidx-rules = { module = "androidx.test:rules", version.ref = "test-rules" }
 androidx-runner = { module = "androidx.test:runner", version.ref = "test-runner" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
-glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
-gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
+glide-ksp = { module = "com.github.bumptech.glide:ksp", version.ref = "glide" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { module = "junit:junit", version.ref = "junit" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
@@ -58,3 +57,6 @@ retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", ve
 rxjava-rxandroid = { module = "io.reactivex.rxjava2:rxandroid", version.ref = "rxjava2" }
 
 [plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version = "2.1.0-1.0.29" }
