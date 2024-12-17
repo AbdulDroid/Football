@@ -15,8 +15,6 @@ room = "2.6.1"
 koin = "4.0.0"
 retrofit = "2.9.0"
 rxjava2 = "2.1.0"
-androidsvg = "1.2.1"
-glide = "4.14.2"
 gson = "2.10.1"
 okhttp3 = "4.12.0"
 junit = "4.13.2"
@@ -24,7 +22,6 @@ test-runner = "1.6.2"
 test-rules = "1.6.1"
 
 [libraries]
-androidsvg = { module = "com.caverock:androidsvg", version.ref = "androidsvg" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
@@ -43,8 +40,6 @@ androidx-runner = { module = "androidx.test:runner", version.ref = "test-runner"
 coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil" }
-glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
-glide-ksp = { module = "com.github.bumptech.glide:ksp", version.ref = "glide" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { module = "junit:junit", version.ref = "junit" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
