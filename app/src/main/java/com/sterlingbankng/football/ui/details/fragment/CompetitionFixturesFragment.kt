@@ -5,96 +5,101 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.sterlingbankng.football.R
+import com.sterlingbankng.football.databinding.FragmentCompetitionFixturesBinding
 import com.sterlingbankng.football.di.viewmodels.DetailsActivityViewModel
 import com.sterlingbankng.football.ui.home.adapter.FixturesRecyclerViewAdapter
 import com.sterlingbankng.football.utils.getDate
 import com.sterlingbankng.football.utils.hasInternetConnection
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.error_view.*
-import kotlinx.android.synthetic.main.fragment_competition_fixtures.*
-import org.koin.androidx.viewmodel.ext.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
 class CompetitionFixturesFragment : Fragment() {
 
-    private var compId: Long = 0L
+    private var code: String = ""
     private lateinit var mAdapter: FixturesRecyclerViewAdapter
     private val model by viewModel<DetailsActivityViewModel>()
     private var disposable: Disposable? = null
     private var isDataFetched = false
+    private var _binding: FragmentCompetitionFixturesBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            compId = it.getLong("id")
+            code = it.getString("code")!!
         }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_competition_fixtures, container, false)
+        _binding = FragmentCompetitionFixturesBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(fixt_list) {
+        with(binding.fixtList) {
             layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
             setHasFixedSize(true)
             addItemDecoration(DividerItemDecoration(context, RecyclerView.VERTICAL))
             mAdapter = FixturesRecyclerViewAdapter(ArrayList())
             adapter = mAdapter
         }
-        retryButton.setOnClickListener {
-            error_view.visibility = View.GONE
+        binding.errorView.retryButton.setOnClickListener {
+            binding.errorView.errorView.visibility = View.GONE
             getData()
         }
-        model.event.observe(this, Observer {
+        model.event.observe(viewLifecycleOwner) {
             if (it.isLoading) {
-                fixt_progress.visibility = View.VISIBLE
+                binding.fixtProgress.visibility = View.VISIBLE
             } else {
-                fixt_progress.visibility = View.GONE
+                binding.fixtProgress.visibility = View.GONE
             }
-        })
-        model.fixtUiData.observe(this, Observer {
+        }
+        model.fixtUiData.observe(viewLifecycleOwner) {
             if (it.result.isNotEmpty()) {
                 mAdapter.setItems(it.result)
                 isDataFetched = true
-                error_view.visibility = View.GONE
-                fixt_list.visibility = View.VISIBLE
+                binding.errorView.errorView.visibility = View.GONE
+                binding.fixtList.visibility = View.VISIBLE
 
             } else if (it.errorMessage.isNotEmpty()) {
-                fixt_list.visibility = View.GONE
-                error_message.text = it.errorMessage
-                error_view.visibility = View.VISIBLE
+                binding.fixtList.visibility = View.GONE
+                binding.errorView.errorMessage.text = it.errorMessage
+                binding.errorView.errorView.visibility = View.VISIBLE
             }
-        })
+        }
         getData()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun getData() {
         disposable = hasInternetConnection().doOnSuccess {
             if (it) {
                 if (!isDataFetched)
-                    model.getFixtures(compId, getDate(Calendar.getInstance().time))
+                    model.getFixtures(code, getDate(Calendar.getInstance().time))
             } else {
-                fixt_list.visibility = View.GONE
-                error_message.text = ("No Internet Connection")
-                retryButton.isEnabled = true
-                error_view.visibility = View.VISIBLE
+                binding.fixtList.visibility = View.GONE
+                binding.errorView.errorMessage.text = ("No Internet Connection")
+                binding.errorView.retryButton.isEnabled = true
+                binding.errorView.errorView.visibility = View.VISIBLE
             }
         }.doOnError {
-            fixt_list.visibility = View.GONE
-            error_message.text = ("No Internet Connection")
-            retryButton.isEnabled = true
-            error_view.visibility = View.VISIBLE
+            binding.fixtList.visibility = View.GONE
+            binding.errorView.errorMessage.text = ("No Internet Connection")
+            binding.errorView.retryButton.isEnabled = true
+            binding.errorView.errorView.visibility = View.VISIBLE
         }.subscribe()
     }
 
@@ -107,13 +112,11 @@ class CompetitionFixturesFragment : Fragment() {
          * @return A new instance of fragment CompetitionFixturesFragment.
          */
         @JvmStatic
-        fun newInstance(compId: Long) =
+        fun newInstance(code: String) =
             CompetitionFixturesFragment().apply {
                 arguments = Bundle().apply {
-                    putLong("id", compId)
+                    putString("code", code)
                 }
             }
-
-        val TAG: String = CompetitionFixturesFragment::class.java.simpleName
     }
 }

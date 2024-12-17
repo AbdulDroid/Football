@@ -30,6 +30,7 @@
     tools:listitem="@layout/team_grid_item"/>
 
     <include
+            android:id="@+id/error_view"
             layout="@layout/error_view"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,31 +1,28 @@
 package com.sterlingbankng.football.ui.details.adapter
 
-import android.graphics.drawable.PictureDrawable
-import android.net.Uri
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import coil3.load
+import coil3.request.ImageRequest
+import coil3.request.error
+import coil3.request.placeholder
 import com.sterlingbankng.football.R
+import com.sterlingbankng.football.databinding.TeamGridItemBinding
 import com.sterlingbankng.football.repository.api.Team
 import com.sterlingbankng.football.ui.details.fragment.TeamFragment.OnFragmentInteractionListener
-import com.sterlingbankng.football.utils.glide.GlideApp
-import com.sterlingbankng.football.utils.glide.SvgSoftwareLayerSetter
-import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.team_grid_item.*
 
 
 class TeamsRecyclerViewAdapter(
     private var teams: List<Team>,
     private val listener: OnFragmentInteractionListener?
-):
+) :
     RecyclerView.Adapter<TeamsRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val v = LayoutInflater.from(parent.context)
-            .inflate(R.layout.team_grid_item, parent, false)
-        return ViewHolder(v)
+        val binding = TeamGridItemBinding
+            .inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -39,30 +36,23 @@ class TeamsRecyclerViewAdapter(
         teams = data
         notifyDataSetChanged()
     }
-    inner class ViewHolder(override val containerView: View): RecyclerView.ViewHolder(containerView), LayoutContainer {
+
+    inner class ViewHolder(val view: TeamGridItemBinding) : RecyclerView.ViewHolder(view.root) {
         fun bind(team: Team) {
-            if (!team.crestUrl.isNullOrEmpty()) {
-                if (team.crestUrl.endsWith(".svg")) {
-                    GlideApp.with(team_crest)
-                        .`as`(PictureDrawable::class.java)
+            if (team.crestUrl.isNotEmpty()) {
+                val context = view.teamCrest.context
+
+                view.teamCrest.load(team.crestUrl, builder = {
+                    ImageRequest.Builder(context)
                         .placeholder(R.drawable.ic_soccer)
                         .error(R.drawable.ic_soccer)
-                        .transition(DrawableTransitionOptions.withCrossFade())
-                        .listener(SvgSoftwareLayerSetter())
-                        .load(Uri.parse(team.crestUrl))
-                        .into(team_crest)
-                } else {
-                    GlideApp.with(team_crest)
-                        .load(team.crestUrl)
-                        .placeholder(R.drawable.ic_soccer)
-                        .error(R.drawable.ic_soccer)
-                        .into(team_crest)
-                }
+                        .build()
+                })
             } else {
-                team_crest.setImageResource(R.drawable.ic_soccer)
+                view.teamCrest.setImageResource(R.drawable.ic_soccer)
             }
-            team_name.text = team.name
-            containerView.setOnClickListener {
+            view.teamName.text = team.name
+            view.root.setOnClickListener {
                 listener?.onTeamClicked(team.id)
             }
         }

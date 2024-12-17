@@ -1,24 +1,22 @@
 package com.sterlingbankng.football.ui.home.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.sterlingbankng.football.R
+import com.sterlingbankng.football.databinding.FixtureListItemBinding
 import com.sterlingbankng.football.repository.api.Match
 import com.sterlingbankng.football.utils.getMatchTime
 import com.sterlingbankng.football.utils.getTime
-import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.fixture_list_item.*
 
 class FixturesRecyclerViewAdapter(
     private var mValues: List<Match>
 ) : RecyclerView.Adapter<FixturesRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.fixture_list_item, parent, false)
-        return ViewHolder(view)
+        val binding = FixtureListItemBinding
+            .inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -33,32 +31,32 @@ class FixturesRecyclerViewAdapter(
         notifyDataSetChanged()
     }
 
-    inner class ViewHolder(override val containerView: View) : RecyclerView.ViewHolder(containerView), LayoutContainer {
+    inner class ViewHolder(val view: FixtureListItemBinding) : RecyclerView.ViewHolder(view.root) {
 
         fun bind(match: Match) {
-            status.text = match.status
-            time.text = getTime(match.utcDate)
-            mDay.text = String.format(mDay.context?.getString(R.string.matchday)!!, match.matchDay)
-            home.text = match.homeTeam.name
-            away.text = match.awayTeam.name
+            view.status.text = match.status
+            view.time.text = getTime(match.utcDate)
+            view.mDay.text = String.format(view.root.context?.getString(R.string.matchday)!!, match.matchDay)
+            view.home.text = match.homeTeam.name
+            view.away.text = match.awayTeam.name
             when (match.status) {
                 "IN_PLAY" -> {
-                    duration.text = if (match.score.halfTime?.away != null || match.score.halfTime?.home != null) {
+                    view.duration.text = if (match.score.halfTime?.away != null || match.score.halfTime?.home != null) {
                         ("${getMatchTime(match.utcDate, -15)}\'")
                     } else ("${getMatchTime(match.utcDate, 0)}\'")
                 }
                 "PAUSED" -> {
-                    duration.text = ("HT")
+                    view.duration.text = ("HT")
                 }
                 "FINISHED" -> {
-                    duration.text = ("FT")
+                    view.duration.text = ("FT")
                 }
                 else -> {
-                    duration.text = ("00")
+                    view.duration.text = ("")
                 }
             }
-            homeScore.text = ("${match.score.fullTime.home ?: 0}")
-            awayScore.text = ("${match.score.fullTime.away ?: 0}")
+            view.homeScore.text = ("${match.score.fullTime.home ?: 0}")
+            view.awayScore.text = ("${match.score.fullTime.away ?: 0}")
         }
     }
 }

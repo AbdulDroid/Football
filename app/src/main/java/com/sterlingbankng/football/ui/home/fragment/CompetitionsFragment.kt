@@ -6,19 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.sterlingbankng.football.R
+import com.sterlingbankng.football.databinding.FragmentCompetitionsBinding
 import com.sterlingbankng.football.di.viewmodels.HomeActivityViewModel
 import com.sterlingbankng.football.repository.api.Competition
 import com.sterlingbankng.football.ui.home.adapter.CompetitionsRecyclerViewAdapter
 import com.sterlingbankng.football.utils.hasInternetConnection
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.error_view.*
-import kotlinx.android.synthetic.main.fragment_competitions.*
-import org.koin.androidx.viewmodel.ext.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CompetitionsFragment : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
@@ -27,40 +24,44 @@ class CompetitionsFragment : Fragment() {
     private var isDataFetched = false
     private var disposable: Disposable? = null
 
+    private var _binding: FragmentCompetitionsBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_competitions, container, false)
+        _binding = FragmentCompetitionsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        model.event.observe(this, Observer {
+        model.event.observe(viewLifecycleOwner) {
             if (it.isLoading) {
-                competition_progress.visibility = View.VISIBLE
+                binding.competitionProgress.visibility = View.VISIBLE
             } else {
-                competition_progress.visibility = View.GONE
+                binding.competitionProgress.visibility = View.GONE
             }
-        })
-        model.compUiData.observe(this, Observer {
+        }
+        model.compUiData.observe(viewLifecycleOwner) {
             if (it.result.isNotEmpty()) {
                 mAdapter.setItems(it.result)
                 isDataFetched = true
-                error_view.visibility = View.GONE
-                competition_list.visibility = View.VISIBLE
+                binding.errorView.errorView.visibility = View.GONE
+                binding.competitionList.visibility = View.VISIBLE
             } else if (it.errorMessage.isNotEmpty()) {
-                competition_list.visibility = View.GONE
-                error_message.text = it.errorMessage
-                error_view.visibility = View.VISIBLE
+                binding.competitionList.visibility = View.GONE
+                binding.errorView.errorMessage.text = it.errorMessage
+                binding.errorView.errorView.visibility = View.VISIBLE
             }
-        })
-        retryButton.setOnClickListener {
-            error_view.visibility = View.GONE
+        }
+        binding.errorView.retryButton.setOnClickListener {
+            binding.errorView.errorView.visibility = View.GONE
             getData()
         }
-        with(competition_list) {
+        with(binding.competitionList) {
             layoutManager = LinearLayoutManager(
                 context,
                 RecyclerView.VERTICAL,
@@ -86,10 +87,10 @@ class CompetitionsFragment : Fragment() {
             model.getCompetitions()
 
         }.doOnError {
-            competition_list.visibility = View.GONE
-            error_message.text = ("No Internet Connection")
-            retryButton.isEnabled = true
-            error_view.visibility = View.VISIBLE
+            binding.competitionList.visibility = View.GONE
+            binding.errorView.errorMessage.text = ("No Internet Connection")
+            binding.errorView.retryButton.isEnabled = true
+            binding.errorView.errorView.visibility = View.VISIBLE
         }.subscribe()
     }
 
@@ -98,7 +99,7 @@ class CompetitionsFragment : Fragment() {
         if (context is OnFragmentInteractionListener) {
             listener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+            throw RuntimeException("$context must implement OnFragmentInteractionListener")
         }
     }
 
@@ -107,6 +108,11 @@ class CompetitionsFragment : Fragment() {
         listener = null
         if (disposable != null)
             disposable?.dispose()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     /**
@@ -122,9 +128,5 @@ class CompetitionsFragment : Fragment() {
      */
     interface OnFragmentInteractionListener {
         fun onCompetitionClicked(competition: Competition)
-    }
-
-    companion object {
-        val TAG: String = CompetitionsFragment::class.java.simpleName
     }
 }

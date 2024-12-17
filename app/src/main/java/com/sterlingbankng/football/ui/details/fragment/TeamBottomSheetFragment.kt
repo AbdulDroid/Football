@@ -1,7 +1,6 @@
 package com.sterlingbankng.football.ui.details.fragment
 
 import android.app.Dialog
-import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -12,26 +11,32 @@ import android.widget.FrameLayout
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import coil3.load
+import coil3.request.ImageRequest
+import coil3.request.error
+import coil3.request.placeholder
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.sterlingbankng.football.R
+import com.sterlingbankng.football.databinding.TeamBottomViewBinding
 import com.sterlingbankng.football.repository.api.Player
 import com.sterlingbankng.football.repository.api.TeamPlayerResponse
 import com.sterlingbankng.football.ui.details.adapter.PlayerListRecyclerViewAdapter
-import com.sterlingbankng.football.utils.glide.GlideApp
-import com.sterlingbankng.football.utils.glide.SvgSoftwareLayerSetter
-import kotlinx.android.synthetic.main.team_bottom_view.*
 
 class TeamBottomSheetFragment : BottomSheetDialogFragment() {
     private lateinit var dialog: BottomSheetDialog
     private lateinit var behavior: BottomSheetBehavior<View>
+
+    private var _binding: TeamBottomViewBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
         dialog.setOnShowListener {
             val d = it as BottomSheetDialog
-            val sheet = d.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet) as FrameLayout
+            val sheet =
+                d.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet) as FrameLayout
             behavior = BottomSheetBehavior.from(sheet)
             behavior.isHideable = false
             behavior.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -39,7 +44,8 @@ class TeamBottomSheetFragment : BottomSheetDialogFragment() {
         dialog.setOnDismissListener {
             if (!::behavior.isInitialized) {
                 val d = it as BottomSheetDialog
-                val sheet = d.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet) as FrameLayout
+                val sheet =
+                    d.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet) as FrameLayout
                 behavior = BottomSheetBehavior.from(sheet)
             }
             behavior.state = BottomSheetBehavior.STATE_HIDDEN
@@ -51,8 +57,9 @@ class TeamBottomSheetFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.team_bottom_view, container, false)
+    ): View {
+        _binding = TeamBottomViewBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -64,29 +71,19 @@ class TeamBottomSheetFragment : BottomSheetDialogFragment() {
             name = it.getString("name") ?: ""
             url = it.getString("url") ?: ""
             players = it.getParcelableArrayList("players") ?: ArrayList()
-            team_sheet_name.text = name
+            binding.teamSheetName.text = name
             if (url.isNotEmpty()) {
-                if (url.endsWith(".svg")) {
-                    GlideApp.with(this)
-                        .`as`(PictureDrawable::class.java)
+                binding.teamSheetCrest.load(url, builder = {
+                    ImageRequest.Builder(requireContext())
                         .placeholder(R.drawable.ic_soccer)
                         .error(R.drawable.ic_soccer)
-                        .transition(withCrossFade())
-                        .listener(SvgSoftwareLayerSetter())
-                        .load(Uri.parse(url))
-                        .into(team_sheet_crest)
-                } else {
-                    GlideApp.with(this)
-                        .load(url)
-                        .placeholder(R.drawable.ic_soccer)
-                        .error(R.drawable.ic_soccer)
-                        .into(team_sheet_crest)
-                }
+                        .build()
+                })
             } else {
-                team_sheet_crest.setImageResource(R.drawable.ic_soccer)
+                binding.teamSheetCrest.setImageResource(R.drawable.ic_soccer)
             }
             if (players.isNotEmpty()) {
-                with(player_list) {
+                with(binding.playerList) {
                     layoutManager = LinearLayoutManager(
                         context,
                         RecyclerView.VERTICAL,
@@ -96,38 +93,42 @@ class TeamBottomSheetFragment : BottomSheetDialogFragment() {
                 }
             }
         }
-        close_button.setOnClickListener {
+        binding.closeButton.setOnClickListener {
             behavior.state = BottomSheetBehavior.STATE_COLLAPSED
             dialog.hide()
         }
 
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     fun updateData(data: TeamPlayerResponse): Boolean {
         if (context != null) {
-            team_sheet_name?.text = data.name
-            if (!data.crestUrl.isNullOrEmpty()) {
+            binding.teamSheetName.text = data.name
+            if (data.crestUrl.isNotEmpty()) {
                 if (data.crestUrl.endsWith(".svg")) {
-                    GlideApp.with(this)
-                        .`as`(PictureDrawable::class.java)
-                        .placeholder(R.drawable.ic_soccer)
-                        .error(R.drawable.ic_soccer)
-                        .transition(withCrossFade())
-                        .listener(SvgSoftwareLayerSetter())
-                        .load(Uri.parse(data.crestUrl))
-                        .into(team_sheet_crest)
+                    binding.teamSheetCrest.load(Uri.parse(data.crestUrl), builder = {
+                        ImageRequest.Builder(requireContext())
+                            .placeholder(R.drawable.ic_soccer)
+                            .error(R.drawable.ic_soccer)
+                            .build()
+                    })
                 } else {
-                    GlideApp.with(this)
-                        .load(data.crestUrl)
-                        .placeholder(R.drawable.ic_soccer)
-                        .error(R.drawable.ic_soccer)
-                        .into(team_sheet_crest)
+                    binding.teamSheetCrest.load(data.crestUrl, builder = {
+                        ImageRequest.Builder(requireContext())
+                            .placeholder(R.drawable.ic_soccer)
+                            .error(R.drawable.ic_soccer)
+                            .build()
+                    })
                 }
             } else {
-                team_sheet_crest.setImageResource(R.drawable.ic_soccer)
+                binding.teamSheetCrest.setImageResource(R.drawable.ic_soccer)
             }
             if (data.squad.isNotEmpty()) {
-                with(player_list) {
+                with(binding.playerList) {
                     layoutManager = LinearLayoutManager(
                         context,
                         RecyclerView.VERTICAL,

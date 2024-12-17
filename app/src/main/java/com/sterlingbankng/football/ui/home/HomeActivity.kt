@@ -7,20 +7,24 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.sterlingbankng.football.R
+import com.sterlingbankng.football.databinding.ActivityHomeBinding
 import com.sterlingbankng.football.repository.api.Competition
 import com.sterlingbankng.football.ui.details.DetailsActivity
 import com.sterlingbankng.football.ui.home.fragment.CompetitionsFragment
 import com.sterlingbankng.football.ui.home.fragment.TodayFixturesFragment
-import kotlinx.android.synthetic.main.activity_home.*
 
 class HomeActivity : AppCompatActivity(), CompetitionsFragment.OnFragmentInteractionListener {
+
+    private lateinit var binding: ActivityHomeBinding
+
     override fun onCompetitionClicked(competition: Competition) {
-        Log.e(TAG, "we are on our way with id:${competition.id} and name:${competition.name}")
+        Log.e(TAG, "we are on our way with code:${competition.code} and name:${competition.name}")
         val intent = Intent(this, DetailsActivity::class.java)
         intent.putExtra("id", competition.id.toInt())
+        intent.putExtra("code", competition.code.orEmpty())
         intent.putExtra("name", competition.name)
-        intent.putExtra("start", competition.currentSeason.startDate)
-        intent.putExtra("end", competition.currentSeason.endDate)
+        intent.putExtra("start", competition.currentSeason?.startDate)
+        intent.putExtra("end", competition.currentSeason?.endDate)
         startActivity(intent)
     }
 
@@ -28,13 +32,13 @@ class HomeActivity : AppCompatActivity(), CompetitionsFragment.OnFragmentInterac
         BottomNavigationView.OnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.action_fixtures -> {
-                    toolbar.title = getString(R.string.title_fixtures)
+                    binding.toolbar.title = getString(R.string.title_fixtures)
                     showFixtures()
                     currentView = "Fixtures"
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.action_competition -> {
-                    toolbar.title = getString(R.string.title_competition)
+                    binding.toolbar.title = getString(R.string.title_competition)
                     showCompetition()
                     currentView = "Competitions"
                     return@OnNavigationItemSelectedListener true
@@ -48,9 +52,10 @@ class HomeActivity : AppCompatActivity(), CompetitionsFragment.OnFragmentInterac
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_home)
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-        navigation.selectedItemId = if (savedInstanceState != null && savedInstanceState.containsKey("current")) {
+        binding = ActivityHomeBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+        binding.navigation.selectedItemId = if (savedInstanceState != null && savedInstanceState.containsKey("current")) {
             if (savedInstanceState.getString("current").equals("Fixtures", true)) {
                 R.id.action_fixtures
             } else {
@@ -74,7 +79,7 @@ class HomeActivity : AppCompatActivity(), CompetitionsFragment.OnFragmentInterac
 
     private fun loadFragments(fr: Fragment) {
         supportFragmentManager.beginTransaction()
-            .replace(container.id, fr, fr::class.java.simpleName)
+            .replace(binding.container.id, fr, fr::class.java.simpleName)
             .commitAllowingStateLoss()
     }
 
@@ -83,10 +88,9 @@ class HomeActivity : AppCompatActivity(), CompetitionsFragment.OnFragmentInterac
         super.onSaveInstanceState(outState)
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        if (savedInstanceState != null)
-            currentView = savedInstanceState.getString("current")!!
+        currentView = savedInstanceState.getString("current")!!
     }
 
     companion object {

@@ -1,8 +1,14 @@
 package com.sterlingbankng.football.repository
 
 import android.annotation.SuppressLint
+import android.util.Log
 import com.sterlingbankng.football.di.schedulers.SchedulerProvider
-import com.sterlingbankng.football.repository.api.*
+import com.sterlingbankng.football.repository.api.ApiService
+import com.sterlingbankng.football.repository.api.Competition
+import com.sterlingbankng.football.repository.api.MatchResponse
+import com.sterlingbankng.football.repository.api.StandingResponse
+import com.sterlingbankng.football.repository.api.TeamPlayerResponse
+import com.sterlingbankng.football.repository.api.TeamResponse
 import com.sterlingbankng.football.repository.local.CompetitionDao
 import io.reactivex.Observable
 
@@ -13,7 +19,13 @@ class Repository(
 ) {
 
     fun getAllCompetitions(): Observable<List<Competition>> =
-        if (getCompetitionsFromDb().subscribeOn(provider.io()).blockingFirst().isEmpty())
+        if (getCompetitionsFromDb()
+                .subscribeOn(provider.io())
+                .doOnError {
+                    Log.e("Repository", it.toString())
+                }
+                .blockingFirst().isEmpty()
+        )
             getCompetitionFromApi()
         else
             getCompetitionsFromDb()
@@ -25,21 +37,21 @@ class Repository(
             .observeOn(provider.io())
             .toObservable()
             .map {
-                competitionDao.insertAll(it.competitions)
+                competitionDao.insertAll(it.competitions.filter { it.currentSeason != null })
                 it.competitions
             }
 
     fun getFixturesToday(currentDate: String): Observable<MatchResponse> =
         apiService.getAllFixturesToday(currentDate, currentDate)
 
-    fun getCompetitionTeams(id: Long, season: String): Observable<TeamResponse> =
-        apiService.getTeamsByCompetition(id, season)
+    fun getCompetitionTeams(code: String, season: String): Observable<TeamResponse> =
+        apiService.getTeamsByCompetition(code, season)
 
-    fun getCompetitionTable(id: Long): Observable<StandingResponse> =
-        apiService.getStandingsByCompetition(id, "TOTAL")
+    fun getCompetitionTable(code: String): Observable<StandingResponse> =
+        apiService.getStandingsByCompetition(code, "TOTAL")
 
-    fun getCompetitionFixtures(id: Long, date: String): Observable<MatchResponse> =
-        apiService.getFixturesByCompetition(id, date, date)
+    fun getCompetitionFixtures(code: String, date: String): Observable<MatchResponse> =
+        apiService.getFixturesByCompetition(code, date, date)
 
     fun getTeamById(id: Long): Observable<TeamPlayerResponse> =
         apiService.getTeamById(id)

@@ -1,5 +1,6 @@
 package com.sterlingbankng.football.di.module
 
+import com.sterlingbankng.football.BuildConfig
 import com.sterlingbankng.football.repository.api.ApiService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -37,10 +38,18 @@ fun getOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClien
     return OkHttpClient.Builder()
         .addInterceptor(httpLoggingInterceptor)
         .addNetworkInterceptor { chain ->
-            val request = chain.request().newBuilder().addHeader(
-                "Connection",
-                "close"
-            ).build()
+            val request = chain
+                .request()
+                .newBuilder()
+                .addHeader(
+                    "Connection",
+                    "close"
+                )
+                .addHeader(
+                    "X-Auth-Token",
+                    BuildConfig.X_AUTH_TOKEN
+                )
+                .build()
             chain.proceed(request)
         }
         .readTimeout(10, TimeUnit.SECONDS)

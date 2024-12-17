@@ -9,13 +9,13 @@ class Converter{
     companion object {
         @TypeConverter
         @JvmStatic
-        fun fromSeason(value: Season): String{
+        fun fromSeason(value: Season?): String{
             return Gson().toJson(value)
         }
 
         @TypeConverter
         @JvmStatic
-        fun toSeason(value: String): Season {
+        fun toSeason(value: String?): Season? {
             return Gson().fromJson(value, Season::class.java)
         }
         @TypeConverter

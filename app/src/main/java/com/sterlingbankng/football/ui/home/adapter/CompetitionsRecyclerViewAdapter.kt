@@ -1,16 +1,13 @@
 package com.sterlingbankng.football.ui.home.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.sterlingbankng.football.R
+import com.sterlingbankng.football.databinding.CompetitionListItemBinding
 import com.sterlingbankng.football.ui.home.fragment.CompetitionsFragment.OnFragmentInteractionListener
 import com.sterlingbankng.football.repository.api.Competition
 import com.sterlingbankng.football.utils.getYear
 import com.sterlingbankng.football.utils.getYearShort
-import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.competition_list_item.*
 
 class CompetitionsRecyclerViewAdapter(
     private var competitions: List<Competition>,
@@ -18,9 +15,9 @@ class CompetitionsRecyclerViewAdapter(
 ) : RecyclerView.Adapter<CompetitionsRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val v = LayoutInflater.from(parent.context)
-            .inflate(R.layout.competition_list_item, parent, false)
-        return ViewHolder(v)
+        val binding = CompetitionListItemBinding
+            .inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -35,27 +32,32 @@ class CompetitionsRecyclerViewAdapter(
         notifyDataSetChanged()
     }
 
-    inner class ViewHolder(override val containerView: View) : RecyclerView.ViewHolder(containerView), LayoutContainer {
+    inner class ViewHolder(val view: CompetitionListItemBinding) : RecyclerView.ViewHolder(view.root) {
         fun bind(competition: Competition) {
-            competition_name.text =
-                    if (competition.currentSeason.endDate.isNotEmpty() && competition.currentSeason.startDate.isNotEmpty())
-                        if (!getYear(competition.currentSeason.startDate).equals(
-                                getYear(competition.currentSeason.endDate),
+            view.competitionName.text =
+                competition.currentSeason?.let {
+                    if (it.endDate.isNotEmpty() && it.startDate.isNotEmpty())
+                        if (!getYear(it.startDate).equals(
+                                getYear(it.endDate),
                                 true
                             )
                         ) {
 
-                            ("${competition.name} ${getYear(
-                                competition.currentSeason.startDate
-                            )}/${getYearShort(
-                                competition.currentSeason.endDate
-                            )}")
+                            ("${competition.name} ${
+                                getYear(
+                                    it.startDate
+                                )
+                            }/${
+                                getYearShort(
+                                    it.endDate
+                                )
+                            }")
                         } else {
-                            ("${competition.name} ${getYear(competition.currentSeason.startDate)}")
+                            ("${competition.name} ${getYear(it.startDate)}")
                         }
-                    else
-                        competition.name
-            containerView.setOnClickListener {
+                    else competition.name
+                } ?: competition.name
+            view.root.setOnClickListener {
                 listener?.onCompetitionClicked(competition)
             }
         }

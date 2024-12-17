@@ -4,7 +4,7 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 /**
  * Data classes for Fixtures
@@ -51,9 +51,9 @@ data class Score(
 )
 
 data class HomeAway(
-    @SerializedName("homeTeam")
+    @SerializedName("home")
     var home: Int? = 0,
-    @SerializedName("awayTeam")
+    @SerializedName("away")
     var away: Int? = 0
 )
 
@@ -83,8 +83,10 @@ data class Competition(
     var id: Long = 0L,
     @SerializedName("name")
     var name: String = "",
+    @SerializedName("code")
+    var code: String? = "",
     @SerializedName("currentSeason")
-    var currentSeason: Season = Season()
+    var currentSeason: Season? = Season()
 ) : Parcelable
 
 /**
@@ -106,9 +108,8 @@ data class Team(
     var name: String = "",
     @SerializedName("shortName")
     var shortName: String = "",
-    @SerializedName("crestUrl")
+    @SerializedName("crest")
     var crestUrl: String = ""
-
 )
 
 /**
@@ -145,7 +146,7 @@ data class Table(
  * Data classes for Players in  a Team
  */
 data class TeamPlayerResponse(
-    @SerializedName("crestUrl")
+    @SerializedName("crest")
     var crestUrl: String = "",
     @SerializedName("squad")
     var squad: List<Player> = ArrayList(),

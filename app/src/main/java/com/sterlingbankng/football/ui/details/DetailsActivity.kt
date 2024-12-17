@@ -8,10 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.sterlingbankng.football.R
+import com.sterlingbankng.football.databinding.ActivityDetailsBinding
 import com.sterlingbankng.football.di.viewmodels.DetailsActivityViewModel
 import com.sterlingbankng.football.ui.details.fragment.CompetitionFixturesFragment
 import com.sterlingbankng.football.ui.details.fragment.TableFragment
@@ -19,33 +19,37 @@ import com.sterlingbankng.football.ui.details.fragment.TeamBottomSheetFragment
 import com.sterlingbankng.football.ui.details.fragment.TeamFragment
 import com.sterlingbankng.football.utils.getYear
 import com.sterlingbankng.football.utils.getYearShort
-import kotlinx.android.synthetic.main.activity_details.*
-import org.koin.androidx.viewmodel.ext.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DetailsActivity : AppCompatActivity(), TeamFragment.OnFragmentInteractionListener {
 
+    private lateinit var binding: ActivityDetailsBinding
+
     override fun onTeamClicked(id: Int) {
-        viewModel.detailEvent.observe(this, Observer {
+        viewModel.detailEvent.observe(this) {
             if (it.isLoading) {
-                progress.visibility = View.VISIBLE
+                binding.progress.visibility = View.VISIBLE
             } else {
-                progress.visibility = View.GONE
+                binding.progress.visibility = View.GONE
             }
-        })
-        viewModel.detailUiData.observe(this, Observer {
+        }
+        viewModel.detailUiData.observe(this) {
             Log.e(TAG, "Fired")
             if (it.result != null) {
                 if (tBottomSheetFragment == null) {
                     tBottomSheetFragment = TeamBottomSheetFragment.newInstance(it.result!!)
                     tBottomSheetFragment?.isCancelable = false
-                    tBottomSheetFragment?.show(supportFragmentManager, tBottomSheetFragment?.tag ?: "")
+                    tBottomSheetFragment?.show(
+                        supportFragmentManager,
+                        tBottomSheetFragment?.tag ?: ""
+                    )
                 } else {
                     tBottomSheetFragment?.updateData(it.result!!)
                 }
             } else if (it.errorMessage.isNotEmpty()) {
-                Snackbar.make(main_content, it.errorMessage, Snackbar.LENGTH_LONG).show()
+                Snackbar.make(binding.root, it.errorMessage, Snackbar.LENGTH_LONG).show()
             }
-        })
+        }
         viewModel.getTeam(id.toLong())
     }
 
@@ -54,6 +58,7 @@ class DetailsActivity : AppCompatActivity(), TeamFragment.OnFragmentInteractionL
     private var start = ""
     private var end = ""
     private var id = 0
+    private var code = ""
     private var tableFragment: TableFragment? = null
     private var teamFragment: TeamFragment? = null
     private var cFixturesFragment: CompetitionFixturesFragment? = null
@@ -62,18 +67,20 @@ class DetailsActivity : AppCompatActivity(), TeamFragment.OnFragmentInteractionL
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_details)
+        binding = ActivityDetailsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         if (intent.hasExtra("id")) {
             id = intent.getIntExtra("id", 0)
-            name = intent.getStringExtra("name")
-            start = intent.getStringExtra("start")
-            end = intent.getStringExtra("end")
-            toolbar.title = if (!getYear(start).equals(getYear(end), true))
+            code = intent.getStringExtra("code").orEmpty()
+            name = intent?.getStringExtra("name").orEmpty()
+            start = intent?.getStringExtra("start").orEmpty()
+            end = intent?.getStringExtra("end").orEmpty()
+            binding.toolbar.title = if (!getYear(start).equals(getYear(end), true))
                 ("$name ${getYear(start)}/${getYearShort(end)}")
             else
                 ("$name ${getYear(start)}")
         }
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_left)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         // Create the adapter that will return a fragment for each of the three
@@ -81,15 +88,15 @@ class DetailsActivity : AppCompatActivity(), TeamFragment.OnFragmentInteractionL
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
 
         // Set up the ViewPager with the sections adapter.
-        container.adapter = mSectionsPagerAdapter
+        binding.container.adapter = mSectionsPagerAdapter
 
-        container.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
-        tabs.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(container))
+        binding.container.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(binding.tabs))
+        binding.tabs.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(binding.container))
 
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item?.itemId == android.R.id.home) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
             onBackPressed()
             return true
         }
@@ -98,38 +105,38 @@ class DetailsActivity : AppCompatActivity(), TeamFragment.OnFragmentInteractionL
 
     private fun getTableFragment(): TableFragment {
         if (tableFragment == null)
-            tableFragment = TableFragment.newInstance(id.toLong())
+            tableFragment = TableFragment.newInstance(code)
         return tableFragment!!
     }
 
     private fun getTeamFragment(): TeamFragment {
         if (teamFragment == null)
-            teamFragment = TeamFragment.newInstance(id.toLong(), start)
+            teamFragment = TeamFragment.newInstance(code, start)
         return teamFragment!!
     }
 
     private fun getCFixturesFragment(): CompetitionFixturesFragment {
         if (cFixturesFragment == null)
-            cFixturesFragment = CompetitionFixturesFragment.newInstance(id.toLong())
+            cFixturesFragment = CompetitionFixturesFragment.newInstance(code)
         return cFixturesFragment!!
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putInt("id", id)
+        outState.putString("code", code)
         outState.putString("name", name)
         outState.putString("start", start)
         outState.putString("end", end)
         super.onSaveInstanceState(outState)
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        if (savedInstanceState != null) {
-            id = savedInstanceState.getInt("id")
-            name = savedInstanceState.getString("name")!!
-            start = savedInstanceState.getString("start")!!
-            end = savedInstanceState.getString("end")!!
-        }
+        id = savedInstanceState.getInt("id")
+        code = savedInstanceState.getString("code")!!
+        name = savedInstanceState.getString("name")!!
+        start = savedInstanceState.getString("start")!!
+        end = savedInstanceState.getString("end")!!
     }
 
     inner class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {

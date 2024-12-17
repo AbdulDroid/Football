@@ -7,32 +7,33 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.sterlingbankng.football.R
+import com.sterlingbankng.football.databinding.FragmentTeamBinding
 import com.sterlingbankng.football.di.viewmodels.DetailsActivityViewModel
 import com.sterlingbankng.football.ui.details.adapter.TeamsRecyclerViewAdapter
 import com.sterlingbankng.football.utils.getYear
 import com.sterlingbankng.football.utils.hasInternetConnection
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.error_view.*
-import kotlinx.android.synthetic.main.fragment_team.*
-import org.koin.androidx.viewmodel.ext.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TeamFragment : Fragment() {
 
     private var listener: OnFragmentInteractionListener? = null
     private lateinit var mAdapter: TeamsRecyclerViewAdapter
     private val model by viewModel<DetailsActivityViewModel>()
-    private var teamId = 0L;
+    private var teamCode = ""
     private var date: String = ""
     private var isDataFetched = false
     private var disposable: Disposable? = null
+
+    private var _binding: FragmentTeamBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            teamId = it.getLong("id")
+            teamCode = it.getString("code")!!
             date = it.getString("date")!!
         }
     }
@@ -40,46 +41,47 @@ class TeamFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_team, container, false)
+        _binding = FragmentTeamBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(team_list) {
-            layoutManager = GridLayoutManager(context!!, 3, RecyclerView.VERTICAL, false)
+        with(binding.teamList) {
+            layoutManager = GridLayoutManager(requireContext(), 3, RecyclerView.VERTICAL, false)
             setHasFixedSize(true)
             mAdapter = TeamsRecyclerViewAdapter(ArrayList(), listener)
             adapter = mAdapter
         }
-        retryButton.setOnClickListener {
-            error_view.visibility = View.GONE
+        binding.errorView.retryButton.setOnClickListener {
+            binding.errorView.errorView.visibility = View.GONE
             getData()
         }
-        model.event.observe(this, Observer {
+        model.event.observe(viewLifecycleOwner) {
             if (it.isLoading) {
-                team_progress.visibility = View.VISIBLE
+                binding.teamProgress.visibility = View.VISIBLE
             } else {
-                team_progress.visibility = View.GONE
+                binding.teamProgress.visibility = View.GONE
             }
-        })
-        model.teamUiData.observe(this, Observer {
+        }
+        model.teamUiData.observe(viewLifecycleOwner) {
             if (it.result.isNotEmpty()) {
                 mAdapter.setItems(it.result)
                 isDataFetched = true
-                error_view.visibility = View.GONE
-                team_list.visibility = View.VISIBLE
+                binding.errorView.errorView.visibility = View.GONE
+                binding.teamList.visibility = View.VISIBLE
             } else if (it.errorMessage.isNotEmpty()) {
-                team_list.visibility = View.GONE
+                binding.teamList.visibility = View.GONE
                 if (it.errorMessage.equals("HTTP 403 ", true))
-                    error_message.text = ("Access Denied, Required paid plan")
+                    binding.errorView.errorMessage.text = ("Access Denied, Required paid plan")
                 else
-                    error_message.text = it.errorMessage
-                error_view.visibility = View.VISIBLE
+                    binding.errorView.errorMessage.text = it.errorMessage
+                binding.errorView.errorView.visibility = View.VISIBLE
                 Log.e(TAG, it.errorMessage)
             }
-        })
+        }
         getData()
     }
 
@@ -87,16 +89,16 @@ class TeamFragment : Fragment() {
         disposable = hasInternetConnection().doOnSuccess {
             if (it) {
                 if (!isDataFetched)
-                    model.getTeams(teamId, getYear(date))
+                    model.getTeams(teamCode, getYear(date))
             } else {
-                team_list.visibility = View.GONE
-                error_message.text = ("No Internet Connection")
-                error_view.visibility = View.VISIBLE
+                binding.teamList.visibility = View.GONE
+                binding.errorView.errorMessage.text = ("No Internet Connection")
+                binding.errorView.errorView.visibility = View.VISIBLE
             }
         }.doOnError {
-            team_list.visibility = View.GONE
-            error_message.text = ("No Internet Connection")
-            error_view.visibility = View.VISIBLE
+            binding.teamList.visibility = View.GONE
+            binding.errorView.errorMessage.text = ("No Internet Connection")
+            binding.errorView.errorView.visibility = View.VISIBLE
         }.subscribe()
     }
 
@@ -123,10 +125,10 @@ class TeamFragment : Fragment() {
     companion object {
 
         @JvmStatic
-        fun newInstance(teamId: Long, startYear: String) =
+        fun newInstance(code: String, startYear: String) =
             TeamFragment().apply {
                 arguments = Bundle().apply {
-                    putLong("id", teamId)
+                    putString("code", code)
                     putString("date", startYear)
                 }
             }

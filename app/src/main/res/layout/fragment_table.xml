@@ -31,6 +31,7 @@
             tools:listitem="@layout/table_list_item"/>
 
     <include
+            android:id="@+id/error_view"
             layout="@layout/error_view"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

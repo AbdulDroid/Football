@@ -19,11 +19,11 @@ class DetailsActivityViewModel(
     val fixtUiData = MutableLiveData<FixtUiData>()
     val tableUiData = MutableLiveData<TableUiData>()
 
-    fun getTeams(id: Long, date: String) {
+    fun getTeams(code: String, date: String) {
         fetch {
             event.postValue(LoadingEvent(isLoading = true))
             teamUiData.postValue(TeamUiData())
-            repository.getCompetitionTeams(id, date)
+            repository.getCompetitionTeams(code, date)
                 .subscribeOn(provider.io())
                 .observeOn(provider.ui())
                 .subscribe(
@@ -49,11 +49,11 @@ class DetailsActivityViewModel(
         }
     }
 
-    fun getTable(id: Long) {
+    fun getTable(code: String) {
         fetch {
             event.postValue(LoadingEvent(isLoading = true))
             tableUiData.postValue(TableUiData())
-            repository.getCompetitionTable(id)
+            repository.getCompetitionTable(code)
                 .subscribeOn(provider.io())
                 .observeOn(provider.ui())
                 .subscribe(
@@ -76,11 +76,11 @@ class DetailsActivityViewModel(
         }
     }
 
-    fun getFixtures(id: Long, date: String) {
+    fun getFixtures(code: String, date: String) {
         fetch {
             event.postValue(LoadingEvent(isLoading = true))
             fixtUiData.postValue(FixtUiData())
-            repository.getCompetitionFixtures(id, date)
+            repository.getCompetitionFixtures(code, date)
                 .subscribeOn(provider.io())
                 .observeOn(provider.ui())
                 .subscribe(

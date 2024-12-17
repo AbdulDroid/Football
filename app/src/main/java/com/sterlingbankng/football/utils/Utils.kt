@@ -7,7 +7,10 @@ import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
+import java.util.Calendar
 
 fun hasInternetConnection(): Single<Boolean> {
     return Single.fromCallable {
@@ -47,7 +50,7 @@ fun getYear(date: String): String {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     val d = dateFormat.parse(date)
     val formatter = SimpleDateFormat("yyyy", Locale.getDefault())
-    return formatter.format(d)
+    return d?.let { formatter.format(it) } ?: "N/A"
 }
 
 /**
@@ -59,7 +62,7 @@ fun getYearShort(date: String): String {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     val d = dateFormat.parse(date)
     val formatter = SimpleDateFormat("yy", Locale.getDefault())
-    return formatter.format(d)
+    return d?.let { formatter.format(it) } ?: "N/A"
 }
 
 /**
@@ -73,7 +76,7 @@ fun getTime(date: String): String {
     val d = dateFormat.parse(date)
     dateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
     dateFormat.timeZone = TimeZone.getDefault()
-    return dateFormat.format(d)
+    return d?.let { dateFormat.format(it) } ?: "N/A"
 }
 
 /**

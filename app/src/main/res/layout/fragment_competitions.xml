@@ -29,5 +29,6 @@
             app:layout_constraintTop_toTopOf="parent"/>
 
     <include
+            android:id="@+id/error_view"
             layout="@layout/error_view"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,7 +9,7 @@ import com.sterlingbankng.football.repository.api.ApiService
 import com.sterlingbankng.football.repository.local.AppDatabase
 import com.sterlingbankng.football.repository.local.CompetitionDao
 import org.koin.android.ext.koin.androidApplication
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {

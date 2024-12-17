@@ -1,10 +1,8 @@
 package com.sterlingbankng.football
 
-import androidx.test.InstrumentationRegistry
-import androidx.test.runner.AndroidJUnit4
 
+import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Test
-import org.junit.runner.RunWith
 
 import org.junit.Assert.*
 
@@ -13,12 +11,11 @@ import org.junit.Assert.*
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-@RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
     @Test
     fun useAppContext() {
         // Context of the app under test.
-        val appContext = InstrumentationRegistry.getTargetContext()
+        val appContext = InstrumentationRegistry.getInstrumentation().context
         assertEquals("com.sterlingbankng.football", appContext.packageName)
     }
 }

@@ -10,7 +10,7 @@ import com.sterlingbankng.football.repository.api.CompetitionResponse
 import com.sterlingbankng.football.repository.api.Season
 
 
-@Database(entities = [CompetitionResponse::class,Competition::class, Season::class], version = 4, exportSchema = false)
+@Database(entities = [CompetitionResponse::class,Competition::class, Season::class], version = 1, exportSchema = false)
 @TypeConverters(Converter::class)
 abstract class AppDatabase: RoomDatabase() {
     abstract fun competitionDao(): CompetitionDao
