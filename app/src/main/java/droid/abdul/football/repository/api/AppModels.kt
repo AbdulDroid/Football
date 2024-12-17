@@ -3,64 +3,70 @@ package droid.abdul.football.repository.api
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * Data classes for Fixtures
  */
+@Serializable
 data class MatchResponse(
-    @SerializedName("competition")
+    @SerialName("competition")
     var competition: Competition? = Competition(),
-    @SerializedName("matches")
+    @SerialName("matches")
     var matches: List<Match>? = ArrayList()
 )
 
+@Serializable
 data class Match(
-    @SerializedName("id")
+    @SerialName("id")
     var id: Long = 0L,
-    @SerializedName("season")
+    @SerialName("season")
     var season: Season = Season(),
-    @SerializedName("utcDate")
+    @SerialName("utcDate")
     var utcDate: String = "",
-    @SerializedName("status")
+    @SerialName("status")
     var status: String = "",
-    @SerializedName("matchday")
+    @SerialName("matchday")
     var matchDay: Int = 0,
-    @SerializedName("stage")
+    @SerialName("stage")
     var stage: String = "",
-    @SerializedName("group")
+    @SerialName("group")
     var group: String = "",
-    @SerializedName("score")
+    @SerialName("score")
     var score: Score = Score(),
-    @SerializedName("homeTeam")
+    @SerialName("homeTeam")
     var homeTeam: TeamData = TeamData(),
-    @SerializedName("awayTeam")
+    @SerialName("awayTeam")
     var awayTeam: TeamData = TeamData()
 )
 
+@Serializable
 data class Score(
-    @SerializedName("winner")
+    @SerialName("winner")
     var winner: String = "",
-    @SerializedName("duration")
+    @SerialName("duration")
     var duration: String = "",
-    @SerializedName("fullTime")
+    @SerialName("fullTime")
     var fullTime: HomeAway = HomeAway(),
-    @SerializedName("halfTime")
+    @SerialName("halfTime")
     var halfTime: HomeAway? = HomeAway()
 )
 
+@Serializable
 data class HomeAway(
-    @SerializedName("home")
+    @SerialName("home")
     var home: Int? = 0,
-    @SerializedName("away")
+    @SerialName("away")
     var away: Int? = 0
 )
 
+@Serializable
 data class TeamData(
-    @SerializedName("id")
+    @SerialName("id")
     var id: Long = 0L,
-    @SerializedName("name")
+    @SerialName("name")
     var name: String = ""
 )
 
@@ -68,124 +74,132 @@ data class TeamData(
  * Data classes for Competitions
  */
 @Entity(tableName = "response")
+@Serializable
 data class CompetitionResponse(
     @PrimaryKey
     var id: Long = 0L,
-    @SerializedName("competitions")
+    @SerialName("competitions")
     var competitions: List<Competition> = ArrayList()
 )
 
 @Entity(tableName = "competitions")
-@Parcelize
+@Serializable
 data class Competition(
     @PrimaryKey
-    @SerializedName("id")
+    @SerialName("id")
     var id: Long = 0L,
-    @SerializedName("name")
+    @SerialName("name")
     var name: String = "",
-    @SerializedName("code")
+    @SerialName("code")
     var code: String? = "",
-    @SerializedName("currentSeason")
+    @SerialName("currentSeason")
     var currentSeason: Season? = Season()
-) : Parcelable
+)
 
 /**
  * Data classes for Teams
  */
+@Serializable
 data class TeamResponse(
-    @SerializedName("id")
+    @SerialName("id")
     var id: Long = 0L,
-    @SerializedName("season")
+    @SerialName("season")
     var season: Season? = Season(),
-    @SerializedName("teams")
+    @SerialName("teams")
     var teams: List<Team> = ArrayList()
 )
 
+@Serializable
 data class Team(
-    @SerializedName("id")
+    @SerialName("id")
     var id: Int = 0,
-    @SerializedName("name")
+    @SerialName("name")
     var name: String = "",
-    @SerializedName("shortName")
+    @SerialName("shortName")
     var shortName: String = "",
-    @SerializedName("crest")
+    @SerialName("crest")
     var crestUrl: String = ""
 )
 
 /**
  * Data classes for Tables/Standings
  */
+@Serializable
 data class StandingResponse(
-    @SerializedName("season")
+    @SerialName("season")
     var season: Season? = Season(),
-    @SerializedName("standings")
+    @SerialName("standings")
     var standings: List<Standing> = ArrayList()
 )
 
+@Serializable
 data class Standing(
-    @SerializedName("type")
+    @SerialName("type")
     var type: String = "",
-    @SerializedName("table")
+    @SerialName("table")
     var table: List<Table> = ArrayList()
 )
 
+@Serializable
 data class Table(
-    @SerializedName("position")
+    @SerialName("position")
     var position: Int = 0,
-    @SerializedName("team")
+    @SerialName("team")
     var team: Team = Team(),
-    @SerializedName("playedGames")
+    @SerialName("playedGames")
     var played: Int = 0,
-    @SerializedName("points")
+    @SerialName("points")
     var points: Int = 0,
-    @SerializedName("goalDifference")
+    @SerialName("goalDifference")
     var difference: Int = 0
 )
 
 /**
  * Data classes for Players in  a Team
  */
+@Serializable
 data class TeamPlayerResponse(
-    @SerializedName("crest")
+    @SerialName("crest")
     var crestUrl: String = "",
-    @SerializedName("squad")
+    @SerialName("squad")
     var squad: List<Player> = ArrayList(),
-    @SerializedName("name")
+    @SerialName("name")
     var name: String = "",
-    @SerializedName("id")
+    @SerialName("id")
     var id: Int = 0,
-    @SerializedName("shortName")
+    @SerialName("shortName")
     var shortName: String = ""
 )
 
+@Serializable
 @Parcelize
 data class Player(
-    @SerializedName("role")
+    @SerialName("role")
     var role: String = "",
-    @SerializedName("name")
+    @SerialName("name")
     var name: String = "",
-    @SerializedName("id")
+    @SerialName("id")
     var id: Int = 0,
-    @SerializedName("position")
+    @SerialName("position")
     var position: String = ""
 ): Parcelable
 
 /**
  * Common data cases
  */
-@Parcelize
+@Serializable
 @Entity(tableName = "seasons")
 data class Season(
     @PrimaryKey
-    @SerializedName("id")
+    @SerialName("id")
     var id: Long = 0L,
-    @SerializedName("startDate")
+    @SerialName("startDate")
     var startDate: String = "",
-    @SerializedName("endDate")
+    @SerialName("endDate")
     var endDate: String = "",
-    @SerializedName("currentMatchday")
+    @SerialName("currentMatchday")
     var currentMatchday: Int = 0
-) : Parcelable
+)
 
 /**
  * Data classes sed for view updates
@@ -226,7 +240,8 @@ data class FixtUiData(
     var errorMessage: String = ""
 )
 
-data class ErrorResponse(@SerializedName("errorCode")
+@Serializable
+data class ErrorResponse(@SerialName("errorCode")
                          var errorCode: Int = 0,
-                         @SerializedName("message")
+                         @SerialName("message")
                          var message: String = "")

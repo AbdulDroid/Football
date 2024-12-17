@@ -2,6 +2,7 @@ package droid.abdul.football.ui.details.fragment
 
 import android.app.Dialog
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -70,7 +71,12 @@ class TeamBottomSheetFragment : BottomSheetDialogFragment() {
         arguments?.let {
             name = it.getString("name") ?: ""
             url = it.getString("url") ?: ""
-            players = it.getParcelableArrayList("players") ?: ArrayList()
+            players = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                it.getParcelableArrayList("players", Player::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                it.getParcelableArrayList("players")
+            } ?: emptyList()
             binding.teamSheetName.text = name
             if (url.isNotEmpty()) {
                 binding.teamSheetCrest.load(url, builder = {

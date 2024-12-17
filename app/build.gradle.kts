@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlinSerialization)
     id("kotlin-parcelize")
 }
 
@@ -78,7 +79,6 @@ dependencies {
 
     //Retrofit
     implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.gson)
 
     //Coroutines
     implementation(libs.kotlinx.coroutines.android)
@@ -90,8 +90,9 @@ dependencies {
     implementation(libs.coil.network.okhttp)
     implementation(libs.coil.svg)
 
-    //Google JSON Parser
-    implementation(libs.gson)
+    //Kotlinx Serialization
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.retrofit.kotlinx.serialization)
 
     //OkHttp
     implementation(platform(libs.okhttp.bom))

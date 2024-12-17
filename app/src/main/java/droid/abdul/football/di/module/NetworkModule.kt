@@ -1,18 +1,23 @@
 package droid.abdul.football.di.module
 
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import droid.abdul.football.BuildConfig
 import droid.abdul.football.repository.api.ApiService
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+import retrofit2.Converter
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 val networkModule = module {
-    single { httpLoggingInterceptor() }
-    single { getOkHttpClient(get()) }
-    single { getRetrofit() }
+    singleOf(::httpLoggingInterceptor)
+    singleOf(::getOkHttpClient)
+    singleOf(::getRetrofit)
+    singleOf(::getJsonConverterFactory)
     single { createApiService<ApiService>(get()) }
 }
 
@@ -26,10 +31,18 @@ fun httpLoggingInterceptor(): HttpLoggingInterceptor {
 fun getRetrofit(): Retrofit {
     return Retrofit.Builder()
         .baseUrl(ApiService.BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(getJsonConverterFactory())
         .client(getOkHttpClient(httpLoggingInterceptor()))
         .build()
 }
+
+private val json = Json {
+    ignoreUnknownKeys = true
+    ignoreUnknownKeys = true
+    explicitNulls = false
+}
+
+fun getJsonConverterFactory(): Converter.Factory = json.asConverterFactory("application/json".toMediaType())
 
 
 fun getOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient {
