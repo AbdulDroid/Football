@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutDescription="@xml/motion_scene"
-        tools:context=".ui.home.HomeActivity">
+        tools:context="droid.abdul.football.ui.home.HomeActivity">
 
     <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"

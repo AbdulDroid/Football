@@ -16,15 +16,15 @@
             android:usesCleartextTraffic="true"
             tools:ignore="UnusedAttribute">
         <activity
-                android:name="com.sterlingbankng.football.ui.details.DetailsActivity"
+                android:name=".ui.details.DetailsActivity"
                 android:exported="false"
-                android:parentActivityName="com.sterlingbankng.football.ui.home.HomeActivity">
+                android:parentActivityName=".ui.home.HomeActivity">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.sterlingbankng.football.ui.home.HomeActivity"/>
+                    android:value=".ui.home.HomeActivity"/>
         </activity>
         <activity
-                android:name="com.sterlingbankng.football.ui.home.HomeActivity"
+                android:name=".ui.home.HomeActivity"
                 android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

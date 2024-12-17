@@ -6,7 +6,7 @@
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.details.fragment.TableFragment">
+        tools:context="droid.abdul.football.ui.details.fragment.TableFragment">
 
     <ProgressBar
             android:id="@+id/table_progress"

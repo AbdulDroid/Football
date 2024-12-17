@@ -5,9 +5,9 @@ plugins {
     id("kotlin-parcelize")
 }
 
-val versionMajor = 0
+val versionMajor = 1
 val versionMinor = 0
-val versionPatch = 1
+val versionPatch = 0
 var versionClassifier: String? = null
 val isSnapShot = false
 val minSdkVersion = 21
@@ -16,7 +16,7 @@ val minSdkVersion = 21
 android {
     compileSdk = 35
     defaultConfig {
-        applicationId = "com.sterlingbankng.football"
+        applicationId = "droid.abdul.football"
         minSdk = minSdkVersion
         targetSdk = 35
         versionCode = generateVersionCode()
@@ -43,7 +43,7 @@ android {
         jvmTarget = "11"
     }
 
-    namespace = "com.sterlingbankng.football"
+    namespace = "droid.abdul.football"
 
     buildFeatures {
         viewBinding = true
