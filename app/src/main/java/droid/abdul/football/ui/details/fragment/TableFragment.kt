@@ -11,8 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import droid.abdul.football.databinding.FragmentTableBinding
 import droid.abdul.football.di.viewmodels.DetailsActivityViewModel
 import droid.abdul.football.ui.details.adapter.TableRecyclerViewAdapter
-import droid.abdul.football.utils.hasInternetConnection
-import io.reactivex.disposables.Disposable
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TableFragment : Fragment() {
@@ -21,7 +19,6 @@ class TableFragment : Fragment() {
     private val model by viewModel<DetailsActivityViewModel>()
     private var code = ""
     private var isDataFetched = false
-    private var disposable: Disposable? = null
 
     private var _binding: FragmentTableBinding? = null
     private val binding get() = _binding!!
@@ -76,20 +73,8 @@ class TableFragment : Fragment() {
     }
 
     private fun getData() {
-        disposable = hasInternetConnection().doOnSuccess {
-            if (it) {
-                if (!isDataFetched)
-                    model.getTable(code)
-            } else {
-                binding.errorView.errorMessage.text = ("No Internet Connection")
-                binding.tableList.visibility = View.GONE
-                binding.errorView.errorView.visibility = View.VISIBLE
-            }
-        }.doOnError {
-            binding.errorView.errorMessage.text = ("No Internet Connection")
-            binding.tableList.visibility = View.GONE
-            binding.errorView.errorView.visibility = View.VISIBLE
-        }.subscribe()
+        if (!isDataFetched)
+            model.getTable(code)
     }
 
     override fun onDestroyView() {

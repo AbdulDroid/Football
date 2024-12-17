@@ -65,7 +65,7 @@ dependencies {
     //Architecture components
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.rxjava2)
+    implementation(libs.androidx.room.ktx)
     testImplementation(libs.androidx.core.testing)
     testImplementation(libs.androidx.room.testing)
     ksp(libs.androidx.lifecycle.compiler)
@@ -79,10 +79,11 @@ dependencies {
     //Retrofit
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
-    implementation(libs.retrofit.adapter.rxjava2)
 
-    //RxAndroid
-    implementation(libs.rxjava.rxandroid)
+    //Coroutines
+    implementation(libs.kotlinx.coroutines.android)
+    testImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
 
     //Coil for Image loading
     implementation(libs.coil)

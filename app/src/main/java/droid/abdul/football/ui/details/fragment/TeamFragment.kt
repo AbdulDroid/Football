@@ -13,8 +13,6 @@ import droid.abdul.football.databinding.FragmentTeamBinding
 import droid.abdul.football.di.viewmodels.DetailsActivityViewModel
 import droid.abdul.football.ui.details.adapter.TeamsRecyclerViewAdapter
 import droid.abdul.football.utils.getYear
-import droid.abdul.football.utils.hasInternetConnection
-import io.reactivex.disposables.Disposable
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TeamFragment : Fragment() {
@@ -25,7 +23,6 @@ class TeamFragment : Fragment() {
     private var teamCode = ""
     private var date: String = ""
     private var isDataFetched = false
-    private var disposable: Disposable? = null
 
     private var _binding: FragmentTeamBinding? = null
     private val binding get() = _binding!!
@@ -86,20 +83,8 @@ class TeamFragment : Fragment() {
     }
 
     private fun getData() {
-        disposable = hasInternetConnection().doOnSuccess {
-            if (it) {
-                if (!isDataFetched)
-                    model.getTeams(teamCode, getYear(date))
-            } else {
-                binding.teamList.visibility = View.GONE
-                binding.errorView.errorMessage.text = ("No Internet Connection")
-                binding.errorView.errorView.visibility = View.VISIBLE
-            }
-        }.doOnError {
-            binding.teamList.visibility = View.GONE
-            binding.errorView.errorMessage.text = ("No Internet Connection")
-            binding.errorView.errorView.visibility = View.VISIBLE
-        }.subscribe()
+        if (!isDataFetched)
+            model.getTeams(teamCode, getYear(date))
     }
 
     override fun onAttach(context: Context) {
@@ -114,8 +99,6 @@ class TeamFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         listener = null
-        if (disposable != null)
-            disposable?.dispose()
     }
 
     interface OnFragmentInteractionListener {

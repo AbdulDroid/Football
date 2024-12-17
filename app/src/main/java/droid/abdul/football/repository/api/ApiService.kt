@@ -1,7 +1,5 @@
 package droid.abdul.football.repository.api
 
-import io.reactivex.Observable
-import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -9,37 +7,37 @@ import retrofit2.http.Query
 interface ApiService {
 
     @GET("competitions/")
-    fun getAllCompetitions(
+    suspend fun getAllCompetitions(
         @Query("plan") plan: String,
-    ): Single<CompetitionResponse>
+    ): CompetitionResponse
 
     @GET("competitions/{code}/matches")
-    fun getFixturesByCompetition(
+    suspend fun getFixturesByCompetition(
         @Path("code") code: String,
         @Query("dateFrom") dateFrom: String,
         @Query("dateTo") dateTo: String
-    ): Observable<MatchResponse>
+    ): MatchResponse
 
     @GET("competitions/{code}/teams")
-    fun getTeamsByCompetition(
+    suspend fun getTeamsByCompetition(
         @Path("code") code: String,
         @Query("season") season: String
-    ): Observable<TeamResponse>
+    ): TeamResponse
 
     @GET("competitions/{code}/standings")
-    fun getStandingsByCompetition(
+    suspend fun getStandingsByCompetition(
         @Path("code") code: String,
         @Query("standingType") type: String
-    ): Observable<StandingResponse>
+    ): StandingResponse
 
     @GET("matches")
-    fun getAllFixturesToday(
+    suspend fun getAllFixturesToday(
         @Query("dateFrom") dateFrom: String,
         @Query("dateTo") dateTo: String
-    ): Observable<MatchResponse>
+    ): MatchResponse
 
     @GET("teams/{id}")
-    fun getTeamById(@Path("id") id: Long): Observable<TeamPlayerResponse>
+    suspend fun getTeamById(@Path("id") id: Long): TeamPlayerResponse
 
 
     companion object {

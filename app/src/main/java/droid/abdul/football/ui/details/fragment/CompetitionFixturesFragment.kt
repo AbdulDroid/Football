@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -12,8 +13,7 @@ import droid.abdul.football.databinding.FragmentCompetitionFixturesBinding
 import droid.abdul.football.di.viewmodels.DetailsActivityViewModel
 import droid.abdul.football.ui.home.adapter.FixturesRecyclerViewAdapter
 import droid.abdul.football.utils.getDate
-import droid.abdul.football.utils.hasInternetConnection
-import io.reactivex.disposables.Disposable
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
@@ -22,7 +22,6 @@ class CompetitionFixturesFragment : Fragment() {
     private var code: String = ""
     private lateinit var mAdapter: FixturesRecyclerViewAdapter
     private val model by viewModel<DetailsActivityViewModel>()
-    private var disposable: Disposable? = null
     private var isDataFetched = false
     private var _binding: FragmentCompetitionFixturesBinding? = null
     private val binding get() = _binding!!
@@ -85,22 +84,10 @@ class CompetitionFixturesFragment : Fragment() {
     }
 
     private fun getData() {
-        disposable = hasInternetConnection().doOnSuccess {
-            if (it) {
-                if (!isDataFetched)
-                    model.getFixtures(code, getDate(Calendar.getInstance().time))
-            } else {
-                binding.fixtList.visibility = View.GONE
-                binding.errorView.errorMessage.text = ("No Internet Connection")
-                binding.errorView.retryButton.isEnabled = true
-                binding.errorView.errorView.visibility = View.VISIBLE
-            }
-        }.doOnError {
-            binding.fixtList.visibility = View.GONE
-            binding.errorView.errorMessage.text = ("No Internet Connection")
-            binding.errorView.retryButton.isEnabled = true
-            binding.errorView.errorView.visibility = View.VISIBLE
-        }.subscribe()
+        lifecycleScope.launch {
+            if (!isDataFetched)
+                model.getFixtures(code, getDate(Calendar.getInstance().time))
+        }
     }
 
     companion object {

@@ -1,6 +1,8 @@
 package droid.abdul.football.diViewModelTests
 
 import droid.abdul.football.repository.Repository
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -25,9 +27,9 @@ class RepositoryTest: KoinTest {
     }
 
     @Test
-    fun getCompetition() {
-        val competitions = repository.getAllCompetitions().blockingFirst()
-        val competitions1 = repository.getAllCompetitions().blockingFirst()
+    fun getCompetition() = runTest {
+        val competitions = repository.getAllCompetitions().first()
+        val competitions1 = repository.getAllCompetitions().first()
         Assert.assertEquals(competitions, competitions1)
     }
 }

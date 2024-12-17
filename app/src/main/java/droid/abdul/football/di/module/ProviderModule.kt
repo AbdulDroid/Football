@@ -1,18 +1,18 @@
 package droid.abdul.football.di.module
 
-import droid.abdul.football.di.schedulers.BaseScheduler
-import droid.abdul.football.di.schedulers.SchedulerProvider
+import droid.abdul.football.di.schedulers.BaseDispatcher
+import droid.abdul.football.di.schedulers.DispatcherProvider
 import org.koin.dsl.module
 
 val providerModule = module {
-    single { createScheduler() }
-    single { scheduler() }
+    single { createDispatcher() }
+    single { dispatcher() }
 }
 
-fun createScheduler(): BaseScheduler {
-    return SchedulerProvider.instance
+fun createDispatcher(): BaseDispatcher {
+    return DispatcherProvider.instance
 }
 
-fun scheduler(): SchedulerProvider {
-    return SchedulerProvider.instance
+fun dispatcher(): DispatcherProvider {
+    return DispatcherProvider.instance
 }

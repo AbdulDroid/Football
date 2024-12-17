@@ -1,80 +1,88 @@
 package droid.abdul.football.di.viewmodels
 
 import androidx.lifecycle.MutableLiveData
-import droid.abdul.football.base.BaseViewModel
-import droid.abdul.football.di.schedulers.SchedulerProvider
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import droid.abdul.football.di.schedulers.DispatcherProvider
 import droid.abdul.football.repository.Repository
 import droid.abdul.football.repository.api.CompUiData
 import droid.abdul.football.repository.api.FixUiData
 import droid.abdul.football.repository.api.LoadingEvent
+import droid.abdul.football.utils.hasInternetConnection
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import java.net.UnknownHostException
-import java.util.concurrent.TimeUnit
 
 class HomeActivityViewModel(
     private val repository: Repository,
-    private val provider: SchedulerProvider
-) :
-    BaseViewModel() {
+    private val provider: DispatcherProvider,
+) : ViewModel() {
     val event = MutableLiveData<LoadingEvent>()
     val compUiData = MutableLiveData<CompUiData>()
     val fixUiData = MutableLiveData<FixUiData>()
 
     fun getCompetitions() {
-        fetch {
-            event.postValue(LoadingEvent(isLoading = true))
+        event.postValue(LoadingEvent(isLoading = true))
+        viewModelScope.launch {
+            val isConnected = hasInternetConnection(provider.io())
+            if (!isConnected) {
+                compUiData.postValue(CompUiData(errorMessage = "No Internet Connection"))
+                event.postValue(LoadingEvent(isSuccess = true))
+                return@launch
+            }
             repository.getAllCompetitions()
-                .debounce(400, TimeUnit.MILLISECONDS)
-                .subscribeOn(provider.io())
-                .observeOn(provider.ui())
-                .subscribe(
-                    {
-                        //Log.e("TEST", it.toString())
-                        if (it.isNotEmpty()) {
-                            event.postValue(LoadingEvent(isSuccess = true))
-                            compUiData.postValue(
-                                CompUiData(result = it.sortedWith(compareBy { t ->
-                                    t.name
-                                }))
-                            )
-                        } else {
-                            event.postValue(LoadingEvent(isSuccess = true))
-                            compUiData.postValue(CompUiData(errorMessage = "No competitions"))
-                        }
-                    }, {
-                        it.printStackTrace()
-                        event.postValue(LoadingEvent(error = it))
-                        if (it !is UnknownHostException)
+                .catch {
+                    it.printStackTrace()
+                    event.postValue(LoadingEvent(error = it))
+                    if (it !is UnknownHostException)
                         compUiData.postValue(CompUiData(errorMessage = it.message!!))
-                        else
-                            compUiData.postValue(CompUiData(errorMessage = "No Internet Connection"))
-                    })
+                    else
+                        compUiData.postValue(CompUiData(errorMessage = "No Internet Connection"))
+                }
+                .onEach {
+                    if (it.isNotEmpty()) {
+                        event.postValue(LoadingEvent(isSuccess = true))
+                        compUiData.postValue(
+                            CompUiData(result = it.sortedWith(compareBy { t ->
+                                t.name
+                            }))
+                        )
+                    } else {
+                        event.postValue(LoadingEvent(isSuccess = true))
+                        compUiData.postValue(CompUiData(errorMessage = "No competitions"))
+                    }
+                }.collect()
         }
     }
 
     fun getTodayFixtures(date: String) {
-        fetch {
+        viewModelScope.launch {
             event.postValue(LoadingEvent(isLoading = true))
-            repository.getFixturesToday(date)
-                .subscribeOn(provider.io())
-                .observeOn(provider.ui())
-                .subscribe(
-                    {
-                        if (it.matches != null && it.matches?.isNotEmpty() == true) {
-                            fixUiData.postValue(FixUiData(result = it.matches!!))
-                            event.postValue(LoadingEvent(isSuccess = true))
-                        } else {
-                            fixUiData.postValue(FixUiData(errorMessage = "No Fixtures"))
-                            event.postValue(LoadingEvent(isSuccess = true))
-                        }
-                    },
-                    {
-                        event.postValue(LoadingEvent(error = it))
-                        it.printStackTrace()
-                        if (it !is UnknownHostException)
-                            fixUiData.postValue(FixUiData(errorMessage = it.message!!))
-                        else
-                            fixUiData.postValue(FixUiData(errorMessage = "No Internet Connection"))
-                    })
+            try {
+                val isConnected = hasInternetConnection(provider.io())
+                if (!isConnected) {
+                    fixUiData.postValue(FixUiData(errorMessage = "No Internet Connection"))
+                    event.postValue(LoadingEvent(isSuccess = true))
+                    return@launch
+                }
+                val response = repository.getFixturesToday(date)
+                if (response.matches != null && response.matches?.isNotEmpty() == true) {
+                    fixUiData.postValue(FixUiData(result = response.matches!!))
+                    event.postValue(LoadingEvent(isSuccess = true))
+                } else {
+                    fixUiData.postValue(FixUiData(errorMessage = "No Fixtures"))
+                    event.postValue(LoadingEvent(isSuccess = true))
+                }
+            } catch (e: Exception) {
+                event.postValue(LoadingEvent(error = e))
+                e.printStackTrace()
+                if (e !is UnknownHostException)
+                    fixUiData.postValue(FixUiData(errorMessage = e.message ?: "An error occurred"))
+                else
+                    fixUiData.postValue(FixUiData(errorMessage = "No Internet Connection"))
+            }
         }
     }
 }

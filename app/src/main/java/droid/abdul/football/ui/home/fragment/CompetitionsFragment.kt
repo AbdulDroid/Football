@@ -13,8 +13,6 @@ import droid.abdul.football.databinding.FragmentCompetitionsBinding
 import droid.abdul.football.di.viewmodels.HomeActivityViewModel
 import droid.abdul.football.repository.api.Competition
 import droid.abdul.football.ui.home.adapter.CompetitionsRecyclerViewAdapter
-import droid.abdul.football.utils.hasInternetConnection
-import io.reactivex.disposables.Disposable
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CompetitionsFragment : Fragment() {
@@ -22,7 +20,6 @@ class CompetitionsFragment : Fragment() {
     private val model by viewModel<HomeActivityViewModel>()
     private lateinit var mAdapter: CompetitionsRecyclerViewAdapter
     private var isDataFetched = false
-    private var disposable: Disposable? = null
 
     private var _binding: FragmentCompetitionsBinding? = null
     private val binding get() = _binding!!
@@ -83,15 +80,7 @@ class CompetitionsFragment : Fragment() {
     }
 
     private fun getData() {
-        disposable = hasInternetConnection().doOnSuccess {
-            model.getCompetitions()
-
-        }.doOnError {
-            binding.competitionList.visibility = View.GONE
-            binding.errorView.errorMessage.text = ("No Internet Connection")
-            binding.errorView.retryButton.isEnabled = true
-            binding.errorView.errorView.visibility = View.VISIBLE
-        }.subscribe()
+        model.getCompetitions()
     }
 
     override fun onAttach(context: Context) {
@@ -106,8 +95,6 @@ class CompetitionsFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         listener = null
-        if (disposable != null)
-            disposable?.dispose()
     }
 
     override fun onDestroyView() {

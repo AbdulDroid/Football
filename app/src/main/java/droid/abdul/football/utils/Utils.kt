@@ -1,8 +1,7 @@
 package droid.abdul.football.utils
 
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Socket
@@ -12,23 +11,20 @@ import java.util.Locale
 import java.util.TimeZone
 import java.util.Calendar
 
-fun hasInternetConnection(): Single<Boolean> {
-    return Single.fromCallable {
-        try {
-            // Connect to api to check for connection
-            val timeoutMs = 1500
-            val socket = Socket()
-            val socketAddress = InetSocketAddress("api.football-data.org", 443)
+suspend fun hasInternetConnection(dispatcher: CoroutineDispatcher): Boolean = withContext(dispatcher) {
+    try {
+        // Connect to api to check for connection
+        val timeoutMs = 1500
+        val socket = Socket()
+        val socketAddress = InetSocketAddress("api.football-data.org", 443)
 
-            socket.connect(socketAddress, timeoutMs)
-            socket.close()
-            true
-        } catch (e: IOException) {
-            false
-        }
+        socket.connect(socketAddress, timeoutMs)
+        socket.close()
+        true
+    } catch (e: IOException) {
+        e.printStackTrace()
+        false
     }
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
 }
 
 /**

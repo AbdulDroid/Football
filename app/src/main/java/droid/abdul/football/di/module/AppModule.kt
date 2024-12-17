@@ -2,26 +2,26 @@ package droid.abdul.football.di.module
 
 import android.content.Context
 import droid.abdul.football.di.viewmodels.DetailsActivityViewModel
-import droid.abdul.football.di.schedulers.SchedulerProvider
+import droid.abdul.football.di.schedulers.DispatcherProvider
 import droid.abdul.football.di.viewmodels.HomeActivityViewModel
 import droid.abdul.football.repository.Repository
 import droid.abdul.football.repository.api.ApiService
 import droid.abdul.football.repository.local.AppDatabase
 import droid.abdul.football.repository.local.CompetitionDao
-import org.koin.android.ext.koin.androidApplication
-import org.koin.core.module.dsl.viewModel
+import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val appModule = module {
-    viewModel { HomeActivityViewModel(get(), get()) }
-    viewModel { DetailsActivityViewModel(get(), get()) }
+    viewModelOf(::HomeActivityViewModel)
+    viewModelOf(::DetailsActivityViewModel)
     single { createRepository(get(), get(), get ()) }
-    single { createDatabase(androidApplication()) }
-    single { getCompetitionDao(get()) }
+    singleOf(::createDatabase)
+    singleOf(::getCompetitionDao)
 }
 
 
-fun createRepository(apiService: ApiService, competitionDao: CompetitionDao, provider: SchedulerProvider): Repository {
+fun createRepository(apiService: ApiService, competitionDao: CompetitionDao, provider: DispatcherProvider): Repository {
     return Repository(apiService, competitionDao, provider)
 }
 

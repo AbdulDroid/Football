@@ -12,10 +12,8 @@ import droid.abdul.football.databinding.FragmentTodayFixturesBinding
 import droid.abdul.football.di.viewmodels.HomeActivityViewModel
 import droid.abdul.football.ui.home.adapter.FixturesRecyclerViewAdapter
 import droid.abdul.football.utils.getDate
-import droid.abdul.football.utils.hasInternetConnection
-import io.reactivex.disposables.Disposable
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.util.*
+import java.util.Calendar
 
 
 class TodayFixturesFragment : Fragment() {
@@ -23,7 +21,6 @@ class TodayFixturesFragment : Fragment() {
     private val model by viewModel<HomeActivityViewModel>()
     private lateinit var mAdapter: FixturesRecyclerViewAdapter
     private var isDataFetched = false
-    private var disposable: Disposable? = null
 
     private var _binding: FragmentTodayFixturesBinding? = null
     private val binding get() = _binding!!
@@ -76,28 +73,8 @@ class TodayFixturesFragment : Fragment() {
     }
 
     private fun getData() {
-        disposable = hasInternetConnection().doOnSuccess {
-            if (it) {
-                if (!isDataFetched)
-                    model.getTodayFixtures(getDate(Calendar.getInstance().time))
-            } else {
-                binding.list.visibility = View.GONE
-                binding.errorView.errorMessage.text = ("No Internet Connection")
-                binding.errorView.retryButton.isEnabled = true
-                binding.errorView.errorView.visibility = View.VISIBLE
-            }
-        }.doOnError {
-            binding.list.visibility = View.GONE
-            binding.errorView.errorMessage.text = ("No Internet Connection")
-            binding.errorView.retryButton.isEnabled = true
-            binding.errorView.errorView.visibility = View.VISIBLE
-        }.subscribe()
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        if (disposable != null)
-            disposable?.dispose()
+        if (!isDataFetched)
+            model.getTodayFixtures(getDate(Calendar.getInstance().time))
     }
 
     override fun onDestroyView() {

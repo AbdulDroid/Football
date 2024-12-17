@@ -4,6 +4,8 @@ import droid.abdul.football.repository.Repository
 import droid.abdul.football.repository.api.Competition
 import droid.abdul.football.repository.local.AppDatabase
 import droid.abdul.football.repository.local.CompetitionDao
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -31,16 +33,16 @@ class CompetitionDaoTest: KoinTest {
     }
 
     @Test
-    fun testReadWrite() {
+    fun testReadWrite() = runTest {
         val competitions = getCompetitionsAsEntities()
         competitionDao.insertAll(competitions)
         val ids = competitions.map { it.id }
-        val requestedCompetitions = ids.map { competitionDao.getCompetitionById(it).blockingFirst() }
+        val requestedCompetitions = ids.map { competitionDao.getCompetitionById(it).first() }
         Assert.assertEquals(competitions, requestedCompetitions)
     }
 
-    private fun getCompetitionsAsEntities(): List<Competition> {
+    private suspend fun getCompetitionsAsEntities(): List<Competition> {
         return repository.getAllCompetitions()
-            .blockingFirst()
+            .first()
     }
 }
