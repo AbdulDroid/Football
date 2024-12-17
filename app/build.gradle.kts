@@ -84,10 +84,10 @@ dependencies {
     //RxAndroid
     implementation(libs.rxjava.rxandroid)
 
-    //Glide for Image loading
-    implementation(libs.androidsvg)
-    implementation(libs.glide)
-    ksp(libs.glide.ksp)
+    //Coil for Image loading
+    implementation(libs.coil)
+    implementation(libs.coil.network.okhttp)
+    implementation(libs.coil.svg)
 
     //Google JSON Parser
     implementation(libs.gson)

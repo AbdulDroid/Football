@@ -1,4 +1,5 @@
 [versions]
+coil = "3.0.4"
 coreTesting = "2.2.0"
 agp = "8.7.3"
 junitKtx = "1.2.1"
@@ -39,6 +40,9 @@ androidx-room-rxjava2 = { module = "androidx.room:room-rxjava2", version.ref = "
 androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
 androidx-rules = { module = "androidx.test:rules", version.ref = "test-rules" }
 androidx-runner = { module = "androidx.test:runner", version.ref = "test-runner" }
+coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 glide-ksp = { module = "com.github.bumptech.glide:ksp", version.ref = "glide" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
