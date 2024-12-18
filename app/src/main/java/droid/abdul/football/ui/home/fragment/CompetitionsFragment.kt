@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import droid.abdul.football.databinding.FragmentCompetitionsBinding
 import droid.abdul.football.di.viewmodels.HomeActivityViewModel
-import droid.abdul.football.repository.api.Competition
+import droid.abdul.football.repository.api.dto.Competition
 import droid.abdul.football.ui.home.adapter.CompetitionsRecyclerViewAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

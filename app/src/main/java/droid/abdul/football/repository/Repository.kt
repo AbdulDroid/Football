@@ -4,11 +4,11 @@ import android.annotation.SuppressLint
 import android.util.Log
 import droid.abdul.football.di.schedulers.DispatcherProvider
 import droid.abdul.football.repository.api.ApiService
-import droid.abdul.football.repository.api.Competition
-import droid.abdul.football.repository.api.MatchResponse
-import droid.abdul.football.repository.api.StandingResponse
-import droid.abdul.football.repository.api.TeamPlayerResponse
-import droid.abdul.football.repository.api.TeamResponse
+import droid.abdul.football.repository.api.dto.Competition
+import droid.abdul.football.repository.api.dto.MatchResponseDto
+import droid.abdul.football.repository.api.dto.StandingResponseDto
+import droid.abdul.football.repository.api.dto.TeamPlayerResponseDto
+import droid.abdul.football.repository.api.dto.TeamResponseDto
 import droid.abdul.football.repository.local.CompetitionDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -51,22 +51,22 @@ class Repository(
             }
     }
 
-    suspend fun getFixturesToday(currentDate: String): MatchResponse =
+    suspend fun getFixturesToday(currentDate: String): MatchResponseDto =
         apiService.getAllFixturesToday(currentDate, currentDate)
 
-    fun getCompetitionTeams(code: String, season: String): Flow<TeamResponse> = flow {
+    fun getCompetitionTeams(code: String, season: String): Flow<TeamResponseDto> = flow {
         emit(apiService.getTeamsByCompetition(code, season))
     }
 
-    fun getCompetitionTable(code: String): Flow<StandingResponse> = flow {
+    fun getCompetitionTable(code: String): Flow<StandingResponseDto> = flow {
         emit(apiService.getStandingsByCompetition(code, "TOTAL"))
     }
 
-    fun getCompetitionFixtures(code: String, date: String): Flow<MatchResponse> = flow {
+    fun getCompetitionFixtures(code: String, date: String): Flow<MatchResponseDto> = flow {
         emit(apiService.getFixturesByCompetition(code, date, date))
     }
 
-    suspend fun getTeamById(id: Long): TeamPlayerResponse =
+    suspend fun getTeamById(id: Long): TeamPlayerResponseDto =
         apiService.getTeamById(id)
 
     @SuppressLint("CheckResult")

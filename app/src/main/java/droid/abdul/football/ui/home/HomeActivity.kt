@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import droid.abdul.football.R
 import droid.abdul.football.databinding.ActivityHomeBinding
-import droid.abdul.football.repository.api.Competition
+import droid.abdul.football.repository.api.dto.Competition
 import droid.abdul.football.ui.details.DetailsActivity
 import droid.abdul.football.ui.home.fragment.CompetitionsFragment
 import droid.abdul.football.ui.home.fragment.TodayFixturesFragment

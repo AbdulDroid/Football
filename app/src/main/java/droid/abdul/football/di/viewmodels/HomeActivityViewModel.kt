@@ -5,9 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import droid.abdul.football.di.schedulers.DispatcherProvider
 import droid.abdul.football.repository.Repository
-import droid.abdul.football.repository.api.CompUiData
-import droid.abdul.football.repository.api.FixUiData
-import droid.abdul.football.repository.api.LoadingEvent
+import droid.abdul.football.repository.api.dto.Competition
+import droid.abdul.football.repository.api.dto.Match
 import droid.abdul.football.utils.hasInternetConnection
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect

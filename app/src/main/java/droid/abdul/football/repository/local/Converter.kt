@@ -1,8 +1,8 @@
 package droid.abdul.football.repository.local
 
 import androidx.room.TypeConverter
-import droid.abdul.football.repository.api.Competition
-import droid.abdul.football.repository.api.Season
+import droid.abdul.football.repository.api.dto.Competition
+import droid.abdul.football.repository.api.dto.Season
 import kotlinx.serialization.json.Json
 
 class Converter{

@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import droid.abdul.football.databinding.CompetitionListItemBinding
+import droid.abdul.football.repository.api.dto.Competition
 import droid.abdul.football.ui.home.fragment.CompetitionsFragment.OnFragmentInteractionListener
-import droid.abdul.football.repository.api.Competition
 import droid.abdul.football.utils.getYear
 import droid.abdul.football.utils.getYearShort
 

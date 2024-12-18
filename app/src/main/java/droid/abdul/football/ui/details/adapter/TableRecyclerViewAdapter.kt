@@ -9,7 +9,7 @@ import coil3.request.error
 import coil3.request.placeholder
 import droid.abdul.football.R
 import droid.abdul.football.databinding.TableListItemBinding
-import droid.abdul.football.repository.api.Table
+import droid.abdul.football.repository.api.dto.Table
 
 class TableRecyclerViewAdapter(private var tables: List<Table>) :
     RecyclerView.Adapter<TableRecyclerViewAdapter.ViewHolder>() {

@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import droid.abdul.football.R
 import droid.abdul.football.databinding.FixtureListItemBinding
-import droid.abdul.football.repository.api.Match
+import droid.abdul.football.repository.api.dto.Match
 import droid.abdul.football.utils.getMatchTime
 import droid.abdul.football.utils.getTime
 

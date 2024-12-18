@@ -5,12 +5,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import droid.abdul.football.repository.api.Competition
-import droid.abdul.football.repository.api.CompetitionResponse
-import droid.abdul.football.repository.api.Season
+import droid.abdul.football.repository.api.dto.Competition
+import droid.abdul.football.repository.api.dto.CompetitionResponseDto
+import droid.abdul.football.repository.api.dto.Season
 
 
-@Database(entities = [CompetitionResponse::class, Competition::class, Season::class], version = 1, exportSchema = false)
+@Database(entities = [CompetitionResponseDto::class, Competition::class, Season::class], version = 1, exportSchema = false)
 @TypeConverters(Converter::class)
 abstract class AppDatabase: RoomDatabase() {
     abstract fun competitionDao(): CompetitionDao

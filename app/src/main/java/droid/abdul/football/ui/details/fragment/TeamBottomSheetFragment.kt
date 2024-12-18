@@ -21,8 +21,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import droid.abdul.football.R
 import droid.abdul.football.databinding.TeamBottomViewBinding
-import droid.abdul.football.repository.api.Player
-import droid.abdul.football.repository.api.TeamPlayerResponse
+import droid.abdul.football.repository.api.dto.Player
+import droid.abdul.football.repository.api.dto.TeamPlayerResponseDto
 import droid.abdul.football.ui.details.adapter.PlayerListRecyclerViewAdapter
 
 class TeamBottomSheetFragment : BottomSheetDialogFragment() {
@@ -111,7 +111,7 @@ class TeamBottomSheetFragment : BottomSheetDialogFragment() {
         _binding = null
     }
 
-    fun updateData(data: TeamPlayerResponse): Boolean {
+    fun updateData(data: TeamPlayerResponseDto): Boolean {
         if (context != null) {
             binding.teamSheetName.text = data.name
             if (data.crestUrl.isNotEmpty()) {
@@ -157,7 +157,7 @@ class TeamBottomSheetFragment : BottomSheetDialogFragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(data: TeamPlayerResponse) =
+        fun newInstance(data: TeamPlayerResponseDto) =
             TeamBottomSheetFragment().apply {
                 arguments = Bundle().apply {
                     putString("name", data.name)

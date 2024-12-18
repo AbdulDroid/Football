@@ -5,11 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import droid.abdul.football.di.schedulers.DispatcherProvider
 import droid.abdul.football.repository.Repository
-import droid.abdul.football.repository.api.DetailUiData
-import droid.abdul.football.repository.api.FixtUiData
-import droid.abdul.football.repository.api.LoadingEvent
-import droid.abdul.football.repository.api.TableUiData
-import droid.abdul.football.repository.api.TeamUiData
+import droid.abdul.football.repository.api.dto.DetailUiData
+import droid.abdul.football.repository.api.dto.FixtUiData
+import droid.abdul.football.repository.api.dto.LoadingEvent
+import droid.abdul.football.repository.api.dto.TableUiData
+import droid.abdul.football.repository.api.dto.TeamUiData
 import droid.abdul.football.utils.hasInternetConnection
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect

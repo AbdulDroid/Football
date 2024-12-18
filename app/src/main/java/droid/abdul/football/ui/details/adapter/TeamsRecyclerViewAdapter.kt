@@ -9,7 +9,7 @@ import coil3.request.error
 import coil3.request.placeholder
 import droid.abdul.football.R
 import droid.abdul.football.databinding.TeamGridItemBinding
-import droid.abdul.football.repository.api.Team
+import droid.abdul.football.repository.api.dto.Team
 import droid.abdul.football.ui.details.fragment.TeamFragment.OnFragmentInteractionListener
 
 
