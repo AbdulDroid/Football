@@ -13,6 +13,7 @@ import droid.abdul.football.databinding.FragmentCompetitionsBinding
 import droid.abdul.football.di.viewmodels.HomeActivityViewModel
 import droid.abdul.football.repository.api.dto.Competition
 import droid.abdul.football.ui.home.adapter.CompetitionsRecyclerViewAdapter
+import droid.abdul.football.ui.models.UiState
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CompetitionsFragment : Fragment() {
@@ -35,23 +36,26 @@ class CompetitionsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        model.event.observe(viewLifecycleOwner) {
-            if (it.isLoading) {
-                binding.competitionProgress.visibility = View.VISIBLE
-            } else {
-                binding.competitionProgress.visibility = View.GONE
-            }
-        }
-        model.compUiData.observe(viewLifecycleOwner) {
-            if (it.result.isNotEmpty()) {
-                mAdapter.setItems(it.result)
-                isDataFetched = true
-                binding.errorView.errorView.visibility = View.GONE
-                binding.competitionList.visibility = View.VISIBLE
-            } else if (it.errorMessage.isNotEmpty()) {
-                binding.competitionList.visibility = View.GONE
-                binding.errorView.errorMessage.text = it.errorMessage
-                binding.errorView.errorView.visibility = View.VISIBLE
+        model.compUiData.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.competitionList.visibility = View.GONE
+                    binding.errorView.errorView.visibility = View.GONE
+                    binding.competitionProgress.visibility = View.VISIBLE
+                }
+                is UiState.Success -> {
+                        mAdapter.setItems(state.data)
+                        isDataFetched = true
+                    binding.competitionProgress.visibility = View.GONE
+                        binding.errorView.errorView.visibility = View.GONE
+                        binding.competitionList.visibility = View.VISIBLE
+                }
+                is UiState.Error -> {
+                    binding.competitionProgress.visibility = View.GONE
+                    binding.competitionList.visibility = View.GONE
+                    binding.errorView.errorMessage.text = state.message
+                    binding.errorView.errorView.visibility = View.VISIBLE
+                }
             }
         }
         binding.errorView.retryButton.setOnClickListener {

@@ -5,11 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import droid.abdul.football.di.schedulers.DispatcherProvider
 import droid.abdul.football.repository.Repository
-import droid.abdul.football.repository.api.dto.DetailUiData
-import droid.abdul.football.repository.api.dto.FixtUiData
-import droid.abdul.football.repository.api.dto.LoadingEvent
-import droid.abdul.football.repository.api.dto.TableUiData
-import droid.abdul.football.repository.api.dto.TeamUiData
+import droid.abdul.football.repository.api.dto.Match
+import droid.abdul.football.repository.api.dto.Table
+import droid.abdul.football.repository.api.dto.Team
+import droid.abdul.football.repository.api.dto.TeamPlayerResponseDto
+import droid.abdul.football.ui.models.UiState
 import droid.abdul.football.utils.hasInternetConnection
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -21,95 +21,78 @@ class DetailsActivityViewModel(
     private val repository: Repository,
     private val provider: DispatcherProvider
 ) : ViewModel() {
-    val event = MutableLiveData<LoadingEvent>()
-    val detailEvent = MutableLiveData<LoadingEvent>()
-    val detailUiData = MutableLiveData<DetailUiData>()
-    val teamUiData = MutableLiveData<TeamUiData>()
-    val fixtUiData = MutableLiveData<FixtUiData>()
-    val tableUiData = MutableLiveData<TableUiData>()
+    val detailUiData = MutableLiveData<UiState<TeamPlayerResponseDto>>()
+    val teamUiData = MutableLiveData<UiState<List<Team>>>()
+    val fixtUiData = MutableLiveData<UiState<List<Match>>>()
+    val tableUiData = MutableLiveData<UiState<List<Table>>>()
 
     fun getTeams(code: String, date: String) {
-        event.postValue(LoadingEvent(isLoading = true))
-        teamUiData.postValue(TeamUiData())
+        teamUiData.postValue(UiState.Loading)
         viewModelScope.launch {
             val isConnected = hasInternetConnection(provider.io())
             if (!isConnected) {
-                teamUiData.postValue(TeamUiData(errorMessage = "No Internet Connection"))
-                event.postValue(LoadingEvent(isSuccess = true))
+                teamUiData.postValue(UiState.Error(message = "No Internet Connection"))
                 return@launch
             }
             repository.getCompetitionTeams(code, date)
                 .catch {
-                    event.postValue(LoadingEvent(error = it))
                     if (it is UnknownHostException)
-                        teamUiData.postValue(TeamUiData(errorMessage = "No Internet Connection"))
+                        teamUiData.postValue(UiState.Error(message = "No Internet Connection"))
                     else
-                        teamUiData.postValue(TeamUiData(errorMessage = it.message!!))
+                        teamUiData.postValue(UiState.Error(message = it.message!!))
                 }
                 .onEach {
                     if (it.teams.isNotEmpty()) {
                         teamUiData.postValue(
-                            TeamUiData(result = it.teams.sortedWith(compareBy { t -> t.name }))
+                            UiState.Success(data = it.teams.sortedWith(compareBy { t -> t.name }))
                         )
-                        event.postValue(LoadingEvent(isSuccess = true))
                     } else {
-                        teamUiData.postValue(TeamUiData(errorMessage = "No Teams"))
-                        event.postValue(LoadingEvent(isSuccess = true))
+                        teamUiData.postValue(UiState.Error(message = "No Teams"))
                     }
                 }.collect()
         }
     }
 
     fun getTable(code: String) {
-        event.postValue(LoadingEvent(isLoading = true))
-        tableUiData.postValue(TableUiData())
+        tableUiData.postValue(UiState.Loading)
         viewModelScope.launch {
             val isConnected = hasInternetConnection(provider.io())
             if (!isConnected) {
-                tableUiData.postValue(TableUiData(errorMessage = "No Internet Connection"))
-                event.postValue(LoadingEvent(isSuccess = true))
+                tableUiData.postValue(UiState.Error(message = "No Internet Connection"))
             }
             repository.getCompetitionTable(code)
                 .catch {
-                    event.postValue(LoadingEvent(error = it))
-                    tableUiData.postValue(TableUiData(errorMessage = it.message!!))
+                    tableUiData.postValue(UiState.Error(message = it.message!!))
                 }
                 .onEach {
                     if (it.standings[0].table.isNotEmpty()) {
                         tableUiData.postValue(
-                            TableUiData(result = it.standings[0].table.sortedWith(compareBy { t -> t.position }))
+                            UiState.Success(data = it.standings[0].table.sortedWith(compareBy { t -> t.position }))
                         )
-                        event.postValue(LoadingEvent(isSuccess = true))
                     } else {
-                        tableUiData.postValue(TableUiData(errorMessage = "No table data"))
-                        event.postValue(LoadingEvent(isSuccess = true))
+                        tableUiData.postValue(UiState.Error(message = "No table data"))
                     }
                 }.collect()
         }
     }
 
     fun getFixtures(code: String, date: String) {
-        event.postValue(LoadingEvent(isLoading = true))
-        fixtUiData.postValue(FixtUiData())
+        fixtUiData.postValue(UiState.Loading)
         viewModelScope.launch {
             val isConnected = hasInternetConnection(provider.io())
             if (!isConnected) {
-                fixtUiData.postValue(FixtUiData(errorMessage = "No Internet Connection"))
-                detailEvent.postValue(LoadingEvent(isSuccess = true))
+                fixtUiData.postValue(UiState.Error(message = "No Internet Connection"))
                 return@launch
             }
             repository.getCompetitionFixtures(code, date)
                 .catch {
-                    event.postValue(LoadingEvent(error = it))
-                    fixtUiData.postValue(FixtUiData(errorMessage = it.message!!))
+                    fixtUiData.postValue(UiState.Error(message = it.message!!))
                 }
                 .onEach {
                     if (it.matches != null && it.matches?.isNotEmpty() == true) {
-                        fixtUiData.postValue(FixtUiData(it.matches!!))
-                        event.postValue(LoadingEvent(isSuccess = true))
+                        fixtUiData.postValue(UiState.Success(data = it.matches!!))
                     } else {
-                        fixtUiData.postValue(FixtUiData(errorMessage = "No Fixtures"))
-                        event.postValue(LoadingEvent(isSuccess = true))
+                        fixtUiData.postValue(UiState.Error(message = "No Fixtures"))
                     }
                 }.collect()
         }
@@ -117,27 +100,22 @@ class DetailsActivityViewModel(
 
     fun getTeam(id: Long) {
         viewModelScope.launch {
-            detailEvent.postValue(LoadingEvent(isLoading = true))
-            detailUiData.postValue(DetailUiData())
+            detailUiData.postValue(UiState.Loading)
             try {
                 val isConnected = hasInternetConnection(provider.io())
                 if (!isConnected) {
-                    detailUiData.postValue(DetailUiData(errorMessage = "No Internet Connection"))
-                    detailEvent.postValue(LoadingEvent(isSuccess = true))
+                    detailUiData.postValue(UiState.Error(message = "No Internet Connection"))
                     return@launch
                 }
                 val response = repository.getTeamById(id)
                 if (response != null) {
-                    detailUiData.postValue(DetailUiData(result = response))
-                    detailEvent.postValue(LoadingEvent(isSuccess = true))
+                    detailUiData.postValue(UiState.Success(data = response))
                 } else {
-                    detailUiData.postValue(DetailUiData(errorMessage = "No Team data"))
-                    detailEvent.postValue(LoadingEvent(isSuccess = true))
+                    detailUiData.postValue(UiState.Error(message = "No Team data"))
                 }
             } catch (e: Exception) {
-                detailEvent.postValue(LoadingEvent(error = e))
                 e.printStackTrace()
-                detailUiData.postValue(DetailUiData(errorMessage = e.message!!))
+                detailUiData.postValue(UiState.Error(message = e.message!!))
             }
         }
     }

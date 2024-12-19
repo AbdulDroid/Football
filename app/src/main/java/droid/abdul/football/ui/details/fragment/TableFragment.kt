@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import droid.abdul.football.databinding.FragmentTableBinding
 import droid.abdul.football.di.viewmodels.DetailsActivityViewModel
 import droid.abdul.football.ui.details.adapter.TableRecyclerViewAdapter
+import droid.abdul.football.ui.models.UiState
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TableFragment : Fragment() {
@@ -51,22 +52,32 @@ class TableFragment : Fragment() {
             binding.errorView.errorView.visibility = View.GONE
             getData()
         }
-        model.event.observe(viewLifecycleOwner) {
-            if (it.isLoading)
-                binding.tableProgress.visibility = View.VISIBLE
-            else
-                binding.tableProgress.visibility = View.GONE
-        }
-        model.tableUiData.observe(viewLifecycleOwner) {
-            if (it.result.isNotEmpty()) {
-                mAdapter.setItems(it.result)
-                isDataFetched = true
-                binding.errorView.errorView.visibility = View.GONE
-                binding.tableList.visibility = View.VISIBLE
-            } else if (it.errorMessage.isNotEmpty()) {
-                binding.errorView.errorMessage.text = it.errorMessage
-                binding.tableList.visibility = View.GONE
-                binding.errorView.errorView.visibility = View.VISIBLE
+        model.tableUiData.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.tableList.visibility = View.GONE
+                    binding.errorView.errorView.visibility = View.GONE
+                    binding.tableProgress.visibility = View.VISIBLE
+                }
+                is UiState.Error -> {
+                    binding.errorView.errorMessage.text = state.message
+                    binding.tableList.visibility = View.GONE
+                    binding.tableProgress.visibility = View.GONE
+                    binding.errorView.errorView.visibility = View.VISIBLE
+                }
+                is UiState.Success -> {
+                    if (state.data.isNotEmpty()) {
+                        mAdapter.setItems(state.data)
+                        isDataFetched = true
+                        binding.errorView.errorView.visibility = View.GONE
+                        binding.tableList.visibility = View.VISIBLE
+                    } else {
+                        binding.errorView.errorMessage.text = "No data found"
+                        binding.tableList.visibility = View.GONE
+                        binding.errorView.errorView.visibility = View.VISIBLE
+                    }
+                    binding.tableProgress.visibility = View.GONE
+                }
             }
         }
         getData()

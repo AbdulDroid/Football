@@ -12,45 +12,41 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import droid.abdul.football.ui.models.UiState
 import java.net.UnknownHostException
 
 class HomeActivityViewModel(
     private val repository: Repository,
     private val provider: DispatcherProvider,
 ) : ViewModel() {
-    val event = MutableLiveData<LoadingEvent>()
-    val compUiData = MutableLiveData<CompUiData>()
-    val fixUiData = MutableLiveData<FixUiData>()
+    val compUiData = MutableLiveData<UiState<List<Competition>>>()
+    val fixUiData = MutableLiveData<UiState<List<Match>>>()
 
     fun getCompetitions() {
-        event.postValue(LoadingEvent(isLoading = true))
+        compUiData.postValue(UiState.Loading)
         viewModelScope.launch {
             val isConnected = hasInternetConnection(provider.io())
             if (!isConnected) {
-                compUiData.postValue(CompUiData(errorMessage = "No Internet Connection"))
-                event.postValue(LoadingEvent(isSuccess = true))
+                compUiData.postValue(UiState.Error(message = "No Internet Connection"))
                 return@launch
             }
             repository.getAllCompetitions()
                 .catch {
                     it.printStackTrace()
-                    event.postValue(LoadingEvent(error = it))
                     if (it !is UnknownHostException)
-                        compUiData.postValue(CompUiData(errorMessage = it.message!!))
+                        compUiData.postValue(UiState.Error(message = it.message!!))
                     else
-                        compUiData.postValue(CompUiData(errorMessage = "No Internet Connection"))
+                        compUiData.postValue(UiState.Error(message = "No Internet Connection"))
                 }
                 .onEach {
                     if (it.isNotEmpty()) {
-                        event.postValue(LoadingEvent(isSuccess = true))
                         compUiData.postValue(
-                            CompUiData(result = it.sortedWith(compareBy { t ->
+                            UiState.Success(data = it.sortedWith(compareBy { t ->
                                 t.name
                             }))
                         )
                     } else {
-                        event.postValue(LoadingEvent(isSuccess = true))
-                        compUiData.postValue(CompUiData(errorMessage = "No competitions"))
+                        compUiData.postValue(UiState.Error(message = "No competitions"))
                     }
                 }.collect()
         }
@@ -58,29 +54,25 @@ class HomeActivityViewModel(
 
     fun getTodayFixtures(date: String) {
         viewModelScope.launch {
-            event.postValue(LoadingEvent(isLoading = true))
+            fixUiData.postValue(UiState.Loading)
             try {
                 val isConnected = hasInternetConnection(provider.io())
                 if (!isConnected) {
-                    fixUiData.postValue(FixUiData(errorMessage = "No Internet Connection"))
-                    event.postValue(LoadingEvent(isSuccess = true))
+                    fixUiData.postValue(UiState.Error(message = "No Internet Connection"))
                     return@launch
                 }
                 val response = repository.getFixturesToday(date)
                 if (response.matches != null && response.matches?.isNotEmpty() == true) {
-                    fixUiData.postValue(FixUiData(result = response.matches!!))
-                    event.postValue(LoadingEvent(isSuccess = true))
+                    fixUiData.postValue(UiState.Success(data = response.matches!!))
                 } else {
-                    fixUiData.postValue(FixUiData(errorMessage = "No Fixtures"))
-                    event.postValue(LoadingEvent(isSuccess = true))
+                    fixUiData.postValue(UiState.Error(message = "No Fixtures"))
                 }
             } catch (e: Exception) {
-                event.postValue(LoadingEvent(error = e))
                 e.printStackTrace()
                 if (e !is UnknownHostException)
-                    fixUiData.postValue(FixUiData(errorMessage = e.message ?: "An error occurred"))
+                    fixUiData.postValue(UiState.Error(message = e.message ?: "An error occurred"))
                 else
-                    fixUiData.postValue(FixUiData(errorMessage = "No Internet Connection"))
+                    fixUiData.postValue(UiState.Error(message = "No Internet Connection"))
             }
         }
     }

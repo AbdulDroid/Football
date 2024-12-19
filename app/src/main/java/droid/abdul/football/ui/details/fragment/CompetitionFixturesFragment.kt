@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import droid.abdul.football.databinding.FragmentCompetitionFixturesBinding
 import droid.abdul.football.di.viewmodels.DetailsActivityViewModel
 import droid.abdul.football.ui.home.adapter.FixturesRecyclerViewAdapter
+import droid.abdul.football.ui.models.UiState
 import droid.abdul.football.utils.getDate
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -55,24 +56,33 @@ class CompetitionFixturesFragment : Fragment() {
             binding.errorView.errorView.visibility = View.GONE
             getData()
         }
-        model.event.observe(viewLifecycleOwner) {
-            if (it.isLoading) {
-                binding.fixtProgress.visibility = View.VISIBLE
-            } else {
-                binding.fixtProgress.visibility = View.GONE
-            }
-        }
-        model.fixtUiData.observe(viewLifecycleOwner) {
-            if (it.result.isNotEmpty()) {
-                mAdapter.setItems(it.result)
-                isDataFetched = true
-                binding.errorView.errorView.visibility = View.GONE
-                binding.fixtList.visibility = View.VISIBLE
-
-            } else if (it.errorMessage.isNotEmpty()) {
-                binding.fixtList.visibility = View.GONE
-                binding.errorView.errorMessage.text = it.errorMessage
-                binding.errorView.errorView.visibility = View.VISIBLE
+        model.fixtUiData.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.fixtList.visibility = View.GONE
+                    binding.errorView.errorView.visibility = View.GONE
+                    binding.fixtProgress.visibility = View.VISIBLE
+                }
+                is UiState.Success -> {
+                    binding.fixtProgress.visibility = View.GONE
+                    if (state.data.isNotEmpty()) {
+                        mAdapter.setItems(state.data)
+                        isDataFetched = true
+                        binding.errorView.errorView.visibility = View.GONE
+                        binding.fixtList.visibility = View.VISIBLE
+                    } else {
+                        binding.fixtList.visibility = View.GONE
+                        binding.errorView.errorMessage.text = "No Fixtures"
+                        binding.errorView.errorView.visibility = View.VISIBLE
+                    }
+                    binding.fixtProgress.visibility = View.GONE
+                }
+                is UiState.Error -> {
+                    binding.fixtProgress.visibility = View.GONE
+                    binding.fixtList.visibility = View.GONE
+                    binding.errorView.errorMessage.text = state.message
+                    binding.errorView.errorView.visibility = View.VISIBLE
+                }
             }
         }
         getData()
@@ -95,7 +105,7 @@ class CompetitionFixturesFragment : Fragment() {
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
          *
-         *@param compId ID of the competition to fetch fixtures for
+         *@param code ID of the competition to fetch fixtures for
          * @return A new instance of fragment CompetitionFixturesFragment.
          */
         @JvmStatic

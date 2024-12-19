@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import droid.abdul.football.databinding.FragmentTeamBinding
 import droid.abdul.football.di.viewmodels.DetailsActivityViewModel
 import droid.abdul.football.ui.details.adapter.TeamsRecyclerViewAdapter
+import droid.abdul.football.ui.models.UiState
 import droid.abdul.football.utils.getYear
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -56,27 +57,34 @@ class TeamFragment : Fragment() {
             binding.errorView.errorView.visibility = View.GONE
             getData()
         }
-        model.event.observe(viewLifecycleOwner) {
-            if (it.isLoading) {
-                binding.teamProgress.visibility = View.VISIBLE
-            } else {
-                binding.teamProgress.visibility = View.GONE
-            }
-        }
-        model.teamUiData.observe(viewLifecycleOwner) {
-            if (it.result.isNotEmpty()) {
-                mAdapter.setItems(it.result)
-                isDataFetched = true
-                binding.errorView.errorView.visibility = View.GONE
-                binding.teamList.visibility = View.VISIBLE
-            } else if (it.errorMessage.isNotEmpty()) {
-                binding.teamList.visibility = View.GONE
-                if (it.errorMessage.equals("HTTP 403 ", true))
-                    binding.errorView.errorMessage.text = ("Access Denied, Required paid plan")
-                else
-                    binding.errorView.errorMessage.text = it.errorMessage
-                binding.errorView.errorView.visibility = View.VISIBLE
-                Log.e(TAG, it.errorMessage)
+        model.teamUiData.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.teamProgress.visibility = View.VISIBLE
+                }
+                is UiState.Success -> {
+                    if (state.data.isNotEmpty()) {
+                        mAdapter.setItems(state.data)
+                        isDataFetched = true
+                        binding.errorView.errorView.visibility = View.GONE
+                        binding.teamList.visibility = View.VISIBLE
+                    } else {
+                        binding.teamList.visibility = View.GONE
+                        binding.errorView.errorMessage.text = ("No Teams")
+                        binding.errorView.errorView.visibility = View.VISIBLE
+                    }
+                    binding.teamProgress.visibility = View.GONE
+                }
+                is UiState.Error -> {
+                    binding.teamList.visibility = View.GONE
+                    if (state.message.equals("HTTP 403 ", true)) {
+                        binding.errorView.errorMessage.text = ("Access Denied, Required paid plan")
+                    } else {
+                        binding.errorView.errorMessage.text = state.message
+                    }
+                    binding.errorView.errorView.visibility = View.VISIBLE
+                    Log.e(TAG, state.message)
+                }
             }
         }
         getData()

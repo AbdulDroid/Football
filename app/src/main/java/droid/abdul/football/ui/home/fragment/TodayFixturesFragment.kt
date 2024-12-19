@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import droid.abdul.football.databinding.FragmentTodayFixturesBinding
 import droid.abdul.football.di.viewmodels.HomeActivityViewModel
 import droid.abdul.football.ui.home.adapter.FixturesRecyclerViewAdapter
+import droid.abdul.football.ui.models.UiState
 import droid.abdul.football.utils.getDate
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Calendar
@@ -48,25 +49,28 @@ class TodayFixturesFragment : Fragment() {
             binding.errorView.errorView.visibility = View.GONE
             getData()
         }
-        model.event.observe(viewLifecycleOwner) {
-            if (it.isLoading) {
-                binding.progress.visibility = View.VISIBLE
-            } else {
-                binding.progress.visibility = View.GONE
-            }
-        }
 
-        model.fixUiData.observe(viewLifecycleOwner) {
-            if (it.result.isNotEmpty()) {
-                mAdapter.setItems(it.result)
-                isDataFetched = true
-                binding.errorView.errorView.visibility = View.GONE
-                binding.list.visibility = View.VISIBLE
-            } else {
-                binding.list.visibility = View.GONE
-                binding.errorView.errorMessage.text = ("No Fixtures")
-                binding.errorView.retryButton.isEnabled = false
-                binding.errorView.errorView.visibility = View.VISIBLE
+        model.fixUiData.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progress.visibility = View.VISIBLE
+                }
+
+                is UiState.Success -> {
+                    binding.progress.visibility = View.GONE
+                    mAdapter.setItems(state.data)
+                    isDataFetched = true
+                    binding.errorView.errorView.visibility = View.GONE
+                    binding.list.visibility = View.VISIBLE
+                }
+
+                is UiState.Error -> {
+                    binding.progress.visibility = View.GONE
+                    binding.list.visibility = View.GONE
+                    binding.errorView.errorMessage.text = state.message.ifEmpty { "No Fixtures" }
+                    binding.errorView.retryButton.isEnabled = false
+                    binding.errorView.errorView.visibility = View.VISIBLE
+                }
             }
         }
         getData()
